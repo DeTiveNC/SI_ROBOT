@@ -1,6 +1,4 @@
 last_order_id(1). // initial belief
-moneySuper(0).
-
 
 stock(beer, 11).
 
@@ -20,11 +18,6 @@ stock(beer, 11).
      -stock(beer, _);
      +stock(beer, P-Qtd);
      deliver(Product,Qtd);
-	 ?price(beer, Z);
-	 ?moneySuper(A);
-	 -moneySuper(A);
-	 X = Qtd*Z;
-	 +moneySuper(A+X);
      .send(Ag, tell, delivered(Product,Qtd,OrderId)).
 
 +!order(Product,Qtd)[source(Ag)] : stock(Product, P) & P < Qtd

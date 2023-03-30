@@ -75,7 +75,7 @@ too_much(B) :-
 
 /* Plans */
 
-+money(Cant)[source(owner)] <- +money(Cant).
++money(Cant)[source(owner)] <- -+money(Cant).
 
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer)[source(self)] 

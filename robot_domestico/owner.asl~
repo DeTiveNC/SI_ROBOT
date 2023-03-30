@@ -1,5 +1,6 @@
 trash(can,0).
 
+
 /* Initial goals */
 
 !drink(owner, beer).
@@ -7,7 +8,10 @@ trash(can,0).
 !check_bored. // initial goal: verify whether I am getting bored
 
 +!get(beer) : not asked(beer)
-   <- .send(rmayordomo, tell, asked(beer));
+   <-  
+   -+money(1000-50);
+   .send(rmayordomo, tell, money(X)); 
+   	  .send(rmayordomo, tell, asked(beer));
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer).
 
@@ -111,8 +115,14 @@ trash(can,0).
 
 +!check_bored : true
    <- .random(X); .wait(X*5000+2000);   // i get bored at random times
+   	  .random(Y);
+	  if( Y < 0.5){
       .send(rmayordomo, askOne, time(_), R); // when bored, I ask the robot about the time
       .print(R);
+	  } else {
+	  	.send(rmayordomo, tell, hola);
+		
+	  }
       !check_bored.
 
 +!go_at(owner,P) : at(owner,P) <- true.

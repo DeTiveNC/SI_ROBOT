@@ -2,6 +2,13 @@ trash(can,0).
 money(500).
 
 /* Initial goals */
++pagaCerveza(Cant)[source(rmayordomo)] : money(M) & (M >= Cant) <-
+	!restarDinero(Cant);
+	-+pagaCerveza(0)[source(rmayordomo)].
+	  
++pagaCerveza(Cant)[source(rmayordomo)] : money(M) & (M < Cant) <-
+
+	.print("Cerveza no se puede pagar.").
 
 !drink(owner, beer).
 // !get(beer).   // initial goal: get a beer
@@ -10,16 +17,25 @@ money(500).
 +!get(beer) : not asked(beer)
    <-  
    	  .send(rmayordomo, tell, asked(beer));
-       Y = 50;
-   	  .send(rmayordomo, tell, money(Y)); 	   	
+      // Y = 50;
+   	 // .send(rmayordomo, tell, money(Y)); 	   	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
-      +asked(beer).
-
-+restarDinero <- 
-	   ?money(A);
-	   -money(A);
-       X = A - 50;
-      +money(X).
+      +asked(beer);
+	  .wait(200).
+	  //!restarDinero.
+	  
+	  
++!restarDinero(Cant): Cant > 0 <- 
+	   X = Cant;
+	.send(rmayordomo, tell, money(X));
+	.print("Cerveza pagada.");
+	?money(M);
+	   //-money(M);
+       L = M - 50;
+      -+money(L).
+	  
++!restarDinero(Cant): Cant == 0 <- true.
+	  
 +!drink(owner, beer) : not has(owner, beer) & not asked(beer)
    <- .println("Owner no tiene cerveza.");
       .random(X);
@@ -101,11 +117,17 @@ money(500).
    <- .println("Owner le entrega basura al robot mayordomo.");
       .send(rmayordomo, achieve, recogerBasuraOwner(Elem, C));
       -+trash(Elem, 0).
+	  
++!sip(beer): pagaCerveza(Cant)[source(rmayordomo)] & Cant > 0 <-
+	!restarDinero(Cant);
+	-pagaCerveza(Cant)[source(rmayordomo)];
+	!sip(beer).
+	
 
 +!sip(beer) : not has(owner,beer)
    <- true.
 +!sip(beer): has(owner,beer) & asked(beer)
-   <- .println("Owner va a empezar a beber cerveza.");
+   <-.println("Owner va a empezar a beber cerveza.");
       -asked(beer);
       sip(beer);
       !sip(beer).
@@ -149,4 +171,6 @@ money(500).
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
+	  
+	
 

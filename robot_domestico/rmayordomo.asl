@@ -4,10 +4,11 @@
 available(beer,fridge).
 
 // Dinero que posee el robot mayordomo
-//money(50).
+money(50).
 
 // Limite de cerveza que puede beber el owner
 limit(beer,5).
+precioCerveza(50).
 
 // Basura que posee el robot
 trash(can, 0). // Ya no es necesario
@@ -74,8 +75,18 @@ too_much(B) :-
 
 
 /* Plans */
-
-+money(Cant)[source(owner)] <- -+money(Cant).
++!pideDinero : true <-
+	?precioCerveza(Cant);
+	.print("El precio de la cerveza es: ", Cant);
+	//+pagaCerveza(Cant);
+	.send(owner, tell, pagaCerveza(Cant)).
+	
++money(Cant)[source(owner)] <- 
+	.print("Me dieron: ", Cant, " dinero");	
+	?money(M);
+	X = M + Cant;
+	-+money(X).
+	//-pagaCerveza(Cant).
 
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer)[source(self)] 
@@ -116,7 +127,8 @@ too_much(B) :-
    .println("El Owner tiene la cerveza.");
    // remember that another beer has been consumed
    .date(YY,MM,DD); .time(HH,NN,SS);
-   +consumed(YY,MM,DD,HH,NN,SS,beer).
+   +consumed(YY,MM,DD,HH,NN,SS,beer);
+   !pideDinero.
 
 /*
 +!hasBeer(myOwner) : too_much(beer) & healthMsg(M) <- 
@@ -148,6 +160,7 @@ too_much(B) :-
       .min(L, Min);
 	   !despieza(Min, Z, Agt);
 	   .print("El precio menor es ", Z);
+	   //+precioCerveza(Z);
       ?nbeersPerTime(NBeer);
 	   .send(Agt, achieve, order(beer,NBeer));
       .println("El robot mayordomo ha realizado un pedido al supermercado.");
@@ -197,4 +210,4 @@ too_much(B) :-
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-+hola[source(owner)] <- .print("2+2=5").
++hola[source(owner)] <- .print("Owner quiere que Moreno nos Apruebe SI :)").

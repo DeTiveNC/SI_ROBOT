@@ -96,12 +96,12 @@ money(500).
       -+trash(Elem, C-1).
 +!lanzar(Elem).
 
-
+/*
 +!darBasuraRobot(Elem) : trash(can, C) & C>0
    <- .println("Owner le entrega basura al robot mayordomo.");
       .send(rmayordomo, achieve, recogerBasuraOwner(Elem, C));
       -+trash(Elem, 0).
-
+*/
 +!sip(beer) : not has(owner,beer)
    <- true.
 +!sip(beer): has(owner,beer) & asked(beer)
@@ -149,4 +149,4 @@ money(500).
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-+chiste[(source(rmayordomo))] <- .print("Si"); .send("Con evidentes señales de enfado, la maestra pregunta: Jaimito, ¿te has copiado de Pedro en el examen? Con cara de inocente, Jaimito responde: No, maestra. Entonces, ¿por qué en la respuesta de la pregunta 3, donde Pedro ha puesto no lo sé, has escrito yo tampoco").
++chiste[(source(rmayordomo))] <- .print("Si"); .send(rmayordomo, tell, contarChiste).

@@ -14,7 +14,7 @@ public class HouseView extends GridWorldView {
         hmodel = model;
         defaultFont = new Font("Arial", Font.BOLD, 16); // change default font
         setVisible(true);
-        repaint(0);
+        //repaint();
     }
 
     /** draw application objects */
@@ -73,7 +73,7 @@ public class HouseView extends GridWorldView {
                 break;
             */
         }
-        repaint(0);
+        //repaint();
     }
 
     @Override

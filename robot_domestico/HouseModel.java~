@@ -276,11 +276,10 @@ public class HouseModel extends GridWorldModel {
     boolean vaciarPapelera(){
         if(cansInTrash > 0){
             cansInTrash = 0;
-            if (view != null) view.update(lBin.x,lBin.y);
+          
+        } 
+		  if (view != null) view.update(lBin.x,lBin.y);
             return true;
-        } else{
-            return false;
-        }
     }
 
 

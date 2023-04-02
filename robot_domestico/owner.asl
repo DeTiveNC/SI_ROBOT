@@ -149,4 +149,4 @@ money(500).
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-
++chiste[(source(rmayordomo))] <- .print("Si"); .send(rmayordomo, tell, contarChiste).

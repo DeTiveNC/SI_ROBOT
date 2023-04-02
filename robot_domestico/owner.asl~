@@ -11,11 +11,11 @@ money(500).
    <-  
    	  .send(rmayordomo, tell, asked(beer));
        Y = 50;
-   	  .send(rmayordomo, tell, money(Y)); 
+   	  .send(rmayordomo, tell, money(Y)); 	   	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer).
 
-+!restarDinero <- 
++restarDinero <- 
 	   ?money(A);
 	   -money(A);
        X = A - 50;

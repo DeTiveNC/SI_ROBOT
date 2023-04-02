@@ -1,5 +1,5 @@
 last_order_id(1). // initial belief
-moneySuper(0).
+moneySuper(500).
 
 
 stock(beer, 11).
@@ -8,7 +8,13 @@ stock(beer, 11).
 
 +!sendPrice : price(beer, P)
   <-  .println("Envío de precio al robot mayordomo");
-      .send(rmayordomo, tell, price(beer, P)).
+      .send(rmayordomo, tell, price(beer, P));
+	  ?stock(beer, Z);
+	  ?moneySuper(B);
+	 -moneySuper(B);
+	 Y = P*Z;
+	 C = B - Y;
+	 +moneySuper(C).
 +!sendPrice : true
    <- .println("No hay datos sobre precios en este supermercado").
 
@@ -16,11 +22,11 @@ stock(beer, 11).
 +!order(Product,Qtd)[source(Ag)] : stock(Product, P) & P >= Qtd
   <- ?last_order_id(N);
      OrderId = N + 1;
+	  ?price(beer, Z);
      -+last_order_id(OrderId); 
      -stock(beer, _);
      +stock(beer, P-Qtd);
      deliver(Product,Qtd);
-	 ?price(beer, Z);
 	 ?moneySuper(A);
 	 -moneySuper(A);
 	 X = Qtd*Z;

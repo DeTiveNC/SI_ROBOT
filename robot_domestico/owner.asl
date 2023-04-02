@@ -1,5 +1,5 @@
 trash(can,0).
-
+money(500).
 
 /* Initial goals */
 
@@ -9,12 +9,17 @@ trash(can,0).
 
 +!get(beer) : not asked(beer)
    <-  
-   -+money(1000-50);
-   .send(rmayordomo, tell, money(X)); 
    	  .send(rmayordomo, tell, asked(beer));
+       Y = 50;
+   	  .send(rmayordomo, tell, money(Y)); 	   	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer).
 
++restarDinero <- 
+	   ?money(A);
+	   -money(A);
+       X = A - 50;
+      +money(X).
 +!drink(owner, beer) : not has(owner, beer) & not asked(beer)
    <- .println("Owner no tiene cerveza.");
       .random(X);

@@ -4,7 +4,7 @@
 available(beer,fridge).
 
 // Dinero que posee el robot mayordomo
-money(50).
+//money(50).
 
 // Limite de cerveza que puede beber el owner
 limit(beer,5).
@@ -74,6 +74,8 @@ too_much(B) :-
 
 
 /* Plans */
+
++money(Cant)[source(owner)] <- -+money(Cant).
 
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer)[source(self)] 
@@ -195,4 +197,4 @@ too_much(B) :-
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-
++hola[source(owner)] <- .print("2+2=5").

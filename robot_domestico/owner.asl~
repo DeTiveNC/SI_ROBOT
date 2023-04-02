@@ -1,5 +1,5 @@
 trash(can,0).
-
+money(500).
 
 /* Initial goals */
 
@@ -9,12 +9,17 @@ trash(can,0).
 
 +!get(beer) : not asked(beer)
    <-  
-   -+money(1000-50);
-   .send(rmayordomo, tell, money(X)); 
    	  .send(rmayordomo, tell, asked(beer));
+       Y = 50;
+   	  .send(rmayordomo, tell, money(Y)); 
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer).
 
++!restarDinero <- 
+	   ?money(A);
+	   -money(A);
+       X = A - 50;
+      +money(X).
 +!drink(owner, beer) : not has(owner, beer) & not asked(beer)
    <- .println("Owner no tiene cerveza.");
       .random(X);
@@ -57,13 +62,14 @@ trash(can,0).
    <- .println("Owner está esperando una cerveza.");
 	   .wait(500);
 	   !drink(owner, beer).
-
+/*
 +!cogerCerveza(owner, beer) : true
    <- .println("Owner va a coger una cerveza.");
       !go_at(owner, fridge);
       open(fridge);
       !get(owner, beer).
-
+*/
+/*
 +!getBeer(owner, beer) : available(beer,fridge)
    <- .println("Owner coge una cerveza");
       get(beer);
@@ -74,7 +80,8 @@ trash(can,0).
    <- .println("Owner se encuentra la nevera vacía");
       .send(rmayordomo, untell, available(beer,fridge));
       !go_at(owner, couch).
-
+*/
+/*
 +!tirarLata(owner, can) : trash(can, C) & C>0
    <- .println("Owner va a tirar una lata a la basura.");
       !go_at(owner,bin);
@@ -82,12 +89,13 @@ trash(can,0).
       -+trash(can, C-1);
       !go_at(owner,couch).
 +!tirarLata(owner, can).   
-
+*/
 +!lanzar(Elem) : trash(can, C) & C>0
    <- .println("Owner va a lanzar una lata.");
       generateTrash(Elem);
       -+trash(Elem, C-1).
 +!lanzar(Elem).
+
 
 +!darBasuraRobot(Elem) : trash(can, C) & C>0
    <- .println("Owner le entrega basura al robot mayordomo.");

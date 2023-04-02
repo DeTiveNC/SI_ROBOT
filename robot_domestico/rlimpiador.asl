@@ -1,7 +1,7 @@
 trash(can, 0).
 
 +hay_basura(rlimpiador, trash) [source(rmayordomo)]
-   <- //.send(rmayordomo, tell, send(rlimpiador, hay_basura));
+   <- 
       !recogerBasura(rlimpiador, trash);
       !tirarBasura(rlimpiador, bin);
       .println("El robot limpiador vuelve a su posición");
@@ -38,12 +38,12 @@ trash(can, 0).
 +!desechar(rlimpiador,trash)
    <- .println("El robot limpiador ha depositado toda la basura en el cubo").
 
-/*
+
 +!recogerBasuraOwner(Elem, Cantidad) [source(owner)] : true
    <- ?trash(Elem, C);
       -trash(Elem, C);
       +trash(Elem, C+Cantidad).
-*/
+
 
 
 +!go_at(rlimpiador,P) : at(rlimpiador,P) <- true.

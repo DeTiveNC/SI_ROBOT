@@ -10,6 +10,7 @@ MAS domestic_robot {
             rlimpiador;
             rbasurero;
             rpedidos;
+			rlavador;
             owner;
             supermarket1 supermarket.asl [beliefs="price(beer, 8)"];
             supermarket2 supermarket.asl [beliefs="price(beer, 5)"];

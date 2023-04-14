@@ -15,7 +15,7 @@ public class HouseEnv extends Environment {
     public static final Literal closeFridge = Literal.parseLiteral("close(fridge)");
 
     // Acción de coger una cerveza
-    public static final Literal getBeer  = Literal.parseLiteral("get(beer)");
+    public static final Literal getBeerAndPinchito  = Literal.parseLiteral("get(beer, pinchito)");
     
     // Acción de entregar una cerveza
     public static final Literal handInBeer  = Literal.parseLiteral("hand_in(beer)");
@@ -28,14 +28,27 @@ public class HouseEnv extends Environment {
 
     // Acción de tirar una lata en el entorno
     public static final Literal generateTrash = Literal.parseLiteral("generateTrash(can)");
+	
+	// Acción de crear un plato sucio
+    public static final Literal generatePlato = Literal.parseLiteral("generatePlato(plato)");
 
     // Acción de recoger una lata del entorno
     public static final Literal pickTrash = Literal.parseLiteral("pickTrash(rlimpiador,trash)");
+	
+	// Acción de recoger un plato del owner
+    public static final Literal pickPlato = Literal.parseLiteral("pickPlato(rlimpiador,plato)");
 
+	// Acciones de tirar los platos sucios al lavavajillas
+    public static final Literal desecharP = Literal.parseLiteral("desecharP(rlimpiador,plato)");
+	
     // Acciones de tirar la basura el el cubo
     public static final Literal desecharRLimpiadorTrash = Literal.parseLiteral("desechar(rlimpiador,trash)");
     public static final Literal desecharOwnerTrash = Literal.parseLiteral("desechar(owner,trash)");
-
+	
+	// Acciones de eliminar los platos del lavavajillas
+    public static final Literal vaciarLa = Literal.parseLiteral("vaciarLa(lavavajillas)");
+	// Acciones para poner platos en la lacena
+	 public static final Literal ponerPla = Literal.parseLiteral("ponerPla(rlavador, lacena)");
 
     // Percepciones de tener cerveza
     public static final Literal hasOwnerBeer = Literal.parseLiteral("has(owner,beer)");
@@ -49,10 +62,17 @@ public class HouseEnv extends Environment {
     public static final Literal atRLimpiadorBin = Literal.parseLiteral("at(rlimpiador,bin)");
     public static final Literal atRLimpiadorTrash = Literal.parseLiteral("at(rlimpiador,trash)");
     public static final Literal atRLimpiadorBase = Literal.parseLiteral("at(rlimpiador,baseRLimpiador)");
+	public static final Literal atRLimpiadorCouch = Literal.parseLiteral("at(rlimpiador,couch)");
+	public static final Literal atRLimpiadorLava = Literal.parseLiteral("at(rlimpiador,lavavajillas)");
 
     // Creencias "at" para el agente basurero
     public static final Literal atRBasureroBin = Literal.parseLiteral("at(rbasurero,bin)");
 	public static final Literal atRBasureroBase = Literal.parseLiteral("at(rbasurero,baseRBasurero)");
+	
+	// Creencias "at" para el agente lavador
+    public static final Literal atRLavadorBase = Literal.parseLiteral("at(rlavador,baseRLavador)");
+	public static final Literal atRLavadorLava = Literal.parseLiteral("at(rlavador,lavavajillas)");
+	public static final Literal atRLavadorLace = Literal.parseLiteral("at(rlavador,lacena)");
 
     // Creencias "at" para el agente pedidos
     public static final Literal atRPedidosDelivery = Literal.parseLiteral("at(rpedidos,delivery)");
@@ -89,6 +109,7 @@ public class HouseEnv extends Environment {
         clearPercepts("rlimpiador");
         clearPercepts("rbasurero");
         clearPercepts("rpedidos");
+		clearPercepts("rlavador");
         clearPercepts("owner");
 
         // Obtención de las posiciones de todos los agentes
@@ -96,6 +117,7 @@ public class HouseEnv extends Environment {
         Location lRLimpiador = model.getAgPos(model.agents.get("rlimpiador"));
         Location lRBasurero = model.getAgPos(model.agents.get("rbasurero"));
         Location lRPedidos = model.getAgPos(model.agents.get("rpedidos"));
+		Location lRLavador = model.getAgPos(model.agents.get("rlavador"));
         Location lOwner = model.getAgPos(model.agents.get("owner"));
 
         // Percepciones de posición del agente rmayordomo
@@ -119,6 +141,12 @@ public class HouseEnv extends Environment {
         else if(model.lRLimpiador.equals(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBase);
         }
+		else if (model.lCouchPositions.contains(lRLimpiador)) {
+            addPercept("rlimpiador", atRLimpiadorCouch);
+        }
+		else if(model.lLavavajillasPositions.contains(lRLimpiador)){
+            addPercept("rlimpiador", atRLimpiadorLava);
+        }
 
         // Percepciones de posición del agente robot rbasurero
         if (model.lBinPositions.contains(lRBasurero)){
@@ -127,6 +155,15 @@ public class HouseEnv extends Environment {
             addPercept("rbasurero", atRBasureroBase);
         }
 
+		// Percepciones de posición del agente robot rlavador
+        if (model.lLavavajillasPositions.contains(lRLavador)){
+            addPercept("rlavador", atRLavadorLava);
+        } else if(model.lRLavador.equals(lRLavador)){
+            addPercept("rlavador", atRLavadorBase);
+        }  else if (model.lLacenaPositions.contains(lRLavador)){
+            addPercept("rlavador", atRLavadorLace);
+        }
+		
         // Percepciones de posición del agente rpedidos
         if (model.lDeliveryPositions.contains(lRPedidos)){
             addPercept("rpedidos", atRPedidosDelivery);
@@ -207,6 +244,10 @@ public class HouseEnv extends Environment {
                     dest = model.lTrash.get(0);
                 } else if(l.equals("baseRLimpiador")){
                     dest = model.lRLimpiador;
+                }else if (l.equals("couch")) {
+                    dest = model.lCouch;
+                }else if (l.equals("lavavajillas")) {
+                    dest = model.lLavavajillas;
                 }
             }
 
@@ -218,6 +259,18 @@ public class HouseEnv extends Environment {
                     dest = model.lRBasurero;
                 }
             }
+			
+			// Acciones de movimiento para el robot lavador
+            else if(ag.equals("rlavador")){
+                if(l.equals("lavavajillas")){
+                    dest = model.lLavavajillas;
+                } else if(l.equals("baseRLavador")){
+                    dest = model.lRLavador;
+				} else if(l.equals("lacena")){
+                    dest = model.lLacena;
+                }
+            }
+
 
             // Acciones de movimiento para el robot de pedidos
             else if(ag.equals("rpedidos")){
@@ -263,9 +316,9 @@ public class HouseEnv extends Environment {
         }
 
         // Acción de coger una cerveza
-        else if (action.equals(getBeer) 
+        else if (action.equals(getBeerAndPinchito) 
             && (ag.equals("rmayordomo") || ag.equals("owner"))) {
-                result = model.getBeer(ag);
+                result = model.getBeerAndPinchito(ag);
         }
         
         // Acción de entregar una cerveza
@@ -283,12 +336,24 @@ public class HouseEnv extends Environment {
         else if(action.equals(generateTrash) && ag.equals("owner")){
             result = model.generateTrash();
         }
+		
+		// Acción de generar platos sucios
+        else if(action.equals(generatePlato) && ag.equals("owner")){
+            result = model.generatePlato();
+        }
         
         // Acción de recoger basura del entorno
         else if(action.equals(pickTrash) 
             && (ag.equals("rlimpiador") || ag.equals("owner"))){
 			result = model.pickTrash();	
 		}
+		
+		// Acción de recoger platos del owner
+        else if(action.equals(pickPlato) 
+            && ag.equals("rlimpiador") ){
+			result = model.pickPlato();	
+		}
+        
         
         // Acción de tiral la basura al cubo
         else if
@@ -298,11 +363,27 @@ public class HouseEnv extends Environment {
         ){
             result = model.desechar();	
         }
+		
+		//Accion de hechar los platos
+		else if (action.equals(desecharP) && ag.equals("rlimpiador")){
+            result = model.desecharP();	
+        }
 
         // Acción de vaciar el cubo de basura
         else if(action.equals(vaciarBin) && ag.equals("rbasurero")){
             result = model.vaciarPapelera();
         }
+		
+		// Acción de vaciar el lavavajillas
+        else if(action.equals(vaciarLa) && ag.equals("rlavador")){
+            result = model.vaciarLavavajillas();
+        }
+		
+		// Acción de vaciar los platos y poner los platos en la lacena
+        else if(action.equals(ponerPla) && ag.equals("rlavador")){
+            result = model.ponerPlatos();
+        }
+
 
         // Acción de proveer cerveza
         else if (action.getFunctor().equals("deliver") && ag.contains("supermarket")) {

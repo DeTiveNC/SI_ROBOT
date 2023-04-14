@@ -1,4 +1,5 @@
 trash(can,0).
+platoVa(plato, 0).
 money(500).
 
 /* Initial goals */
@@ -12,7 +13,7 @@ money(500).
    	  .send(rmayordomo, tell, asked(beer));
        Y = 50;
    	  .send(rmayordomo, tell, money(Y)); 	   	
-      .println("Owner ha pedido una cerveza al robot mayordomo.");
+      .println("Owner ha pedido una cerveza y un pincho al robot mayordomo.");
       +asked(beer).
 
 +restarDinero <- 
@@ -21,7 +22,7 @@ money(500).
        X = A - 50;
       +money(X).
 +!drink(owner, beer) : not has(owner, beer) & not asked(beer)
-   <- .println("Owner no tiene cerveza.");
+   <- .println("Owner no tiene cerveza y un pincho.");
       .random(X);
       !get(beer);
       /*
@@ -39,9 +40,13 @@ money(500).
    <- .println("Owner ya tiene una cerveza y se dispone a beberla.");
       !sip(beer);
       ?trash(can,C);
+	  ?platoVa(plato, D);
       -+trash(can, C+1);
-	  .random(X);
+	  -platoVa(plato, D);
+	  +platoVa(plato, D+1);
       !lanzar(can);
+	  !recogerplatosucio(plato);
+	  
       /*
       Comentado para probar los robots
       if(X < 0.33){
@@ -96,22 +101,29 @@ money(500).
       -+trash(Elem, C-1).
 +!lanzar(Elem).
 
++!recogerplatosucio(Elem) : platoVa(plato, D) & D>0
+ <-   .println("Owner deja su plato sucio.");
+      generatePlato(Elem);
+      -+platoVa(Elem, D-1).
++!recogerplatosucio.	  
+ 
 
+/*
 +!darBasuraRobot(Elem) : trash(can, C) & C>0
    <- .println("Owner le entrega basura al robot mayordomo.");
       .send(rmayordomo, achieve, recogerBasuraOwner(Elem, C));
       -+trash(Elem, 0).
-
+*/
 +!sip(beer) : not has(owner,beer)
    <- true.
 +!sip(beer): has(owner,beer) & asked(beer)
-   <- .println("Owner va a empezar a beber cerveza.");
+   <- .println("Owner va a empezar a beber cerveza y comer un pincho.");
       -asked(beer);
       sip(beer);
       !sip(beer).
 +!sip(beer): has(owner,beer) & not asked(beer)
    <- sip(beer);
-      .println("Owner está bebiendo cerveza.");
+      .println("Owner está bebiendo cerveza y comiendo un pincho.");
       !sip(beer).
 
 /*
@@ -149,4 +161,4 @@ money(500).
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-
++chiste[(source(rmayordomo))] <- .print("Si"); .send(rmayordomo, tell, contarChiste).

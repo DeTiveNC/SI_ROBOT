@@ -63,7 +63,29 @@ public class HouseView extends GridWorldView {
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, "Trash");
                 break;
-            
+			// Dibujo para el lavavajillas
+			case HouseModel.LAVAVAJILLAS:
+				String a = "Lava";
+				Color c = Color.yellow;
+                if (hmodel.platosLimpiar > 0) {
+                    a +=  " ("+hmodel.platosLimpiar+")";
+                }
+                super.drawAgent(g, x, y, c, -1);
+                g.setColor(Color.black);
+                drawString(g, x, y, defaultFont, a);
+                break;
+				
+			// Dibujo para la lacena
+            case HouseModel.LACENA:
+				String d = "Lace";
+				Color r = Color.orange;
+                if (hmodel.platosLimpios == 0) {
+                    d +=  " ("+hmodel.platosEnLacena+")";
+                }
+                super.drawAgent(g, x, y, r, -1);
+                g.setColor(Color.black);
+                drawString(g, x, y, defaultFont, d);
+                break;
             /*
             // Dibujado de los posibles obstaculos del entorno
             case HouseModel.OBSTACULE:
@@ -115,7 +137,14 @@ public class HouseView extends GridWorldView {
                 super.drawString(g, x, y, defaultFont, "Ped");
                 break;
 
-            // Dibujado del agente owner
+            // Dibujado del agente rlavador
+            case 5: 
+				c = Color.white;
+                super.drawAgent(g, x, y, c, -1);
+                g.setColor(Color.black);
+                super.drawString(g, x, y, defaultFont, "Lavad");
+                break;
+			// Dibujado del agente owner
             case 4: 
                 super.drawAgent(g, x, y, Color.BLUE, -1);
                 String o = "Owner";

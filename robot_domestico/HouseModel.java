@@ -14,10 +14,12 @@ public class HouseModel extends GridWorldModel {
     public static final int DELIVERY = 64;
     public static final int BIN = 128;
     public static final int TRASH = 256;
+	public static final int LAVAVAJILLAS = 512;
+	public static final int LACENA = 1024;
     //public static final int OBSTACULE = 512;
 
     // Tamaño del grid
-    public static final int GSize = 10;
+    public static final int GSize = 13;
 
     // Map relacionando el nombre de los agentes con su id
     Map<String, Integer> agents = 
@@ -26,7 +28,8 @@ public class HouseModel extends GridWorldModel {
             "rlimpiador", 1,
             "rbasurero", 2,
             "rpedidos", 3,
-            "owner",4
+            "owner",4,
+			"rlavador",5
         );
 
     // Variables de frigorifico abierto o cerrado
@@ -42,6 +45,9 @@ public class HouseModel extends GridWorldModel {
 
     // Cervezas disponibles
     int availableBeers  = 3;
+	
+	//Pinchitos Disponibles
+	int pinchito = 10;
 
     // Cervezas en la zona de entrega
     int deliveryBeers = 0;
@@ -51,16 +57,35 @@ public class HouseModel extends GridWorldModel {
 
     // Número de latas que hay en el cubo de basura
     int cansInTrash = 0;
+	
+	//Platos para limpiar
+	int platosLimpiar = 0;
+	
+	//Platos a limpiar
+	int platosALimpiar = 0;
+	
+	//Platos sucios
+	int platosSucios = 0;
+	
+	//Platos Limpios
+	int platosLimpios = 0;
+	
+	//Platos en la lacena
+	int platosEnLacena = 0;
+	
     
     // Posiciones de los elementos del entorno
     Location lFridge = new Location(0,0);
     Location lDelivery = new Location(0, GSize-1);
     Location lBin = new Location(GSize-1, 0);
     Location lCouch = new Location(GSize-1,GSize-1);
+	Location lLavavajillas = new Location(0,GSize/2);
+	Location lLacena = new Location(GSize/2-2, 0);
 
     // Posiciones originales de los agentes
     Location lRMayordomo = new Location(GSize/2, GSize/2);
     Location lRLimpiador = new Location(GSize/2, 0);
+	Location lRLavador = new Location(0, GSize/2-2);
     Location lRBasurero = new Location(GSize-1, GSize/2-2);
     Location lRPedidos = new Location(GSize/2-2, GSize-1);
     Location lOwner = new Location(GSize-1,GSize-1);
@@ -114,11 +139,30 @@ public class HouseModel extends GridWorldModel {
             new Location(lBin.x-1, lBin.y+1),
             new Location(lBin.x, lBin.y+1)
         ));
+		
+	// Posiciones permitidas para el lavavajillas
+	
+	ArrayList<Location> lLavavajillasPositions
+        = new ArrayList<>(Arrays.asList(
+            new Location(lLavavajillas.x, lLavavajillas.y+1),
+            new Location(lLavavajillas.x, lLavavajillas.y-1),
+            new Location(lLavavajillas.x+1, lLavavajillas.y)
+        ));
+		
+	// Posiciones permitidas de la lacena
+	ArrayList<Location> lLacenaPositions
+        = new ArrayList<>(Arrays.asList(
+            new Location(lLacena.x-1, lLacena.y),
+            new Location(lLacena.x, lLacena.y+1),
+            new Location(lLacena.x+1, lLacena.y)
+        ));
+
+
 
     public HouseModel() {
         // Creación del grid con el tamaño definido en GSize
-        // Número de agentes móviles: 5
-        super(GSize, GSize, 5);
+        // Número de agentes móviles: 6
+        super(GSize, GSize, 6);
 
         // Añadido de posiciones iniciales para los agentes (móviles)
         setAgPos(agents.get("rmayordomo"), lRMayordomo);
@@ -126,12 +170,15 @@ public class HouseModel extends GridWorldModel {
         setAgPos(agents.get("rbasurero"), lRBasurero);
         setAgPos(agents.get("rpedidos"), lRPedidos);
         setAgPos(agents.get("owner"), lOwner);
+		setAgPos(agents.get("rlavador"), lRLavador);
 
         // Añadido de posiciones para los elementos del entorno (no móviles)
         add(FRIDGE, lFridge);
         add(DELIVERY, lDelivery);
         add(BIN, lBin);
         add(COUCH, lCouch);
+		add(LAVAVAJILLAS, lLavavajillas);
+		add(LACENA, lLacena);
         /*
         for(int i = 0; i<lObstacules.size();i++){
             add(OBSTACULE, lObstacules.get(i));
@@ -195,7 +242,7 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Coger cerveza del frigorifico
-    boolean getBeer(String ag) {
+    boolean getBeerAndPinchito(String ag) {
         if (availableBeers > 0) {
             if(fridgeOpenMayordomo && ag.equals("rmayordomo") && !carryingBeerMayordomo){
                 carryingBeerMayordomo = true;
@@ -203,6 +250,7 @@ public class HouseModel extends GridWorldModel {
                 carryingBeerOwner = true;
             }
             
+			pinchito--;
             availableBeers--;
             
             if (view != null) view.update(lFridge.x,lFridge.y);
@@ -271,6 +319,37 @@ public class HouseModel extends GridWorldModel {
         if (view != null) view.update(lBin.x,lBin.y);
         return true; 
     }
+	
+	// desechar los platos
+    boolean desecharP(){
+		if(platosALimpiar > 0){
+			  platosLimpiar+=platosALimpiar;
+			  platosALimpiar=0;
+		}
+      
+        if (view != null) view.update(lLavavajillas.x,lLavavajillas.y);
+        return true; 
+    }
+	
+   // Poner los platos en la lacena
+   boolean vaciarLavavajillas(){
+        if(platosLimpiar > 0){
+			platosLimpios+=platosLimpiar;
+            platosLimpiar = 0;
+			
+        } 
+		  if (view != null) view.update(lLavavajillas.x,lLavavajillas.y);
+            return true;
+    }
+	
+	// Poner platos lacena
+	boolean ponerPlatos(){
+	    platosEnLacena+=platosLimpios;
+		platosLimpios = 0;
+		if (view != null) view.update(lLacena.x,lLacena.y);
+            return true;
+	}
+
 
     // Vacía el cubo de basura
     boolean vaciarPapelera(){
@@ -295,13 +374,27 @@ public class HouseModel extends GridWorldModel {
             location.equals(lBin) &&
             location.equals(lFridge) &&
             location.equals(lCouch) &&
-            location.equals(lDelivery) 
+            location.equals(lDelivery) &&
+			location.equals(lLavavajillas) &&
+			location.equals(lLacena) &&
+			lFridgePositions.contains(location) &&
+			lBinPositions.contains(location) &&
+			lCouchPositions.contains(location) &&
+			lDeliveryPositions.contains(location) &&
+			lLavavajillasPositions.contains(location) &&
+			lLacenaPositions.contains(location)
         );
         
         add(TRASH, location);
         lTrash.add(location);
         return true;
 
+    }
+	
+	// Crear los platos sucios
+    boolean generatePlato() {
+		platosSucios++;
+		return true;
     }
 
 
@@ -318,6 +411,13 @@ public class HouseModel extends GridWorldModel {
 			return true;
         }
 		return false;
+    }
+	
+	// Recoger los platos
+    boolean pickPlato() {
+	   platosALimpiar+=platosSucios;
+	   platosSucios=0;
+	   return true;
     }
 
     // Recoger las cervezas del punto de recogida

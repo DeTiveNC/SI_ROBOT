@@ -6,11 +6,24 @@ stock(beer, 11).
 
 !sendPrice.
 
-+!sendPrice : price(beer, P)
-  <-  .println("Envío de precio al robot mayordomo");
-      .send(rmayordomo, tell, price(beer, P)).
+//price(beer, _, _): solo me interesa que haya al menos un belief de price(beer ...) el resto no me importan los valores
+/*+!sendPrice(P) <-
+	.println("Envío de precio al robot mayordomo");
+	.findall(q(M, C), price(P, C, M), L);
+	.print("Cervezas disponibles: ", L);
+	.send(rmayordomo, tell, seleccion_productos(L)).*/
+	
 +!sendPrice : true
    <- .println("No hay datos sobre precios en este supermercado").
+   
++!lista_productos(P)[source(rmayordomo)]: price(beer, _, _) <-
+	.println("Envío de precio al robot mayordomo");
+	.findall(q(M, C), price(P, C, M), L);
+	.print("Cervezas disponibles: ", L);
+	.send(rmayordomo, tell, seleccion_productos(L)).	
+	
++!lista_productos(P): true
+	<- .print("No hay datos sobre este producto").
 
 // plan to achieve the goal "order" for agent Ag
 +!order(Product,Qtd)[source(Ag)] : stock(Product, P) & P >= Qtd
@@ -20,7 +33,7 @@ stock(beer, 11).
      -stock(beer, _);
      +stock(beer, P-Qtd);
      deliver(Product,Qtd);
-	 ?price(beer, Z);
+	 ?price(beer, Z, Nm);
 	 ?moneySuper(A);
 	 -moneySuper(A);
 	 X = Qtd*Z;

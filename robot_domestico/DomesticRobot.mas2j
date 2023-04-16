@@ -12,7 +12,7 @@ MAS domestic_robot {
             rpedidos;
 			rlavador;
             owner;
-            supermarket1 supermarket.asl [beliefs="price(beer, 8)"];
-            supermarket2 supermarket.asl [beliefs="price(beer, 5)"];
+            supermarket1 supermarket.asl [beliefs="price(beer, 8, aguila), price(beer, 6, estrella), price(beer, 3, volldamm), price(beer, 7, heineken), price(beer, 10, redvintage)"];
+            supermarket2 supermarket.asl [beliefs="price(beer, 9, aguila), price(beer, 4, estrella), price(beer, 5, volldamm), price(beer, 5, heineken), price(beer, 12, redvintage)"];
 
 }

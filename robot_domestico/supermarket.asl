@@ -25,21 +25,21 @@ stock(beer, 11, heineken).
 	<- .print("No hay datos sobre este producto").
 
 // plan to achieve the goal "order" for agent Ag
-+!order(Product,Qtd, M)[source(Ag)] : stock(Product, P, Z) & P >= Qtd & M = Z
++!order(Product,Qtd, M)[source(Ag)] : stock(Product, P, O) & P >= Qtd & M = O
   <- 
   ?last_order_id(N);
      OrderId = N + 1;
-	  ?price(beer, Z);
+	  ?price(beer, F, M);
      -+last_order_id(OrderId); 
      -stock(beer, _, M);
      +stock(beer, P-Qtd, M);
      deliver(Product,Qtd);
-	 ?price(beer, Z, Nm);
+	 ?price(beer, F, Nm);
 	 ?moneySuper(A);
 	 -moneySuper(A);
-	 X = Qtd*Z;
+	 X = Qtd*P;
 	 +moneySuper(A+X);
-	 .print("akdsjad ajhdakshf ajsfdh aisjhfd laishdfl aihsd ", Ag);
+	 .send(rmayordomo, tell, price(beer, Cant, M));
      .send(Ag, tell, delivered(Product,Qtd,OrderId, M)).
 
 +!order(Product,Qtd, M)[source(Ag)] : stock(Product, P, M) & P < Qtd

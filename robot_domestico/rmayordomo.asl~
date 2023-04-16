@@ -56,6 +56,7 @@ too_much(B) :-
 	  !comprar(supermarket, beer, M);
       close(fridge);
       !go_at(rmayordomo,couch);
+	  .wait(1000);
       !hasBeer(owner);
       .abolish(asked(beer));
       !bring(owner, beer).
@@ -92,14 +93,14 @@ too_much(B) :-
    	  .wait(100);
       !bring(owner, beer).
 
-
+/*
 -!bring(K,V)
    :  true
    <- .current_intention(I);
       .print("Failed to achieve goal '!has(K,V)'. Current intention is: ",I);
 	  .print(K);
 	  .print(V).
-	  
+	*/ 
 +!pide_lista_productos_super 
 	<-
 
@@ -120,11 +121,16 @@ too_much(B) :-
 	
 
 
-+!comprar(supermarket, beer, M)[source(Agt)] : not ordered(beer)
-   <- 	
++!comprar(supermarket, beer, M) : not ordered(beer)
+   <- 
+   	  /*.member(M, L3);
+   	  .findall(q(Z, X), price(beer, Z, M)[source(X)], L);
+      .min(L, Min);
+	   !despieza(Min, Z, Agt);
+	   .print("El precio menor es ", Z);
+	   */
       ?nbeersPerTime(NBeer);
-	  //.print(Agt);
-	   .send(Agt, achieve, order(beer,NBeer, M));
+	   .send(supermarket1, achieve, order(beer,NBeer, M));
       .println("El robot mayordomo ha realizado un pedido al supermercado.");
       +ordered(beer).
 	  

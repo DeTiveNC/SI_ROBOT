@@ -20,9 +20,7 @@ money(500).
 
 	  
 	  
-+!restarDinero(Cant): Cant > 0 <- 
-	   X = Cant;
-	.send(rmayordomo, tell, money(X));
++!restarDinero <- 
 	.print("Cerveza pagada.");
 	?money(M);
        L = M - 50;

@@ -93,14 +93,14 @@ too_much(B) :-
    	  .wait(100);
       !bring(owner, beer).
 
-
+/*
 -!bring(K,V)
    :  true
    <- .current_intention(I);
       .print("Failed to achieve goal '!has(K,V)'. Current intention is: ",I);
 	  .print(K);
 	  .print(V).
-	  
+	*/ 
 +!pide_lista_productos_super 
 	<-
 
@@ -121,11 +121,23 @@ too_much(B) :-
 	
 
 
-+!comprar(supermarket, beer, M)[source(Agt)] : not ordered(beer)
++!comprar(supermarket, beer, M) : not ordered(beer)
    <- 
+   	  /*.member(M, L3);
+   	  .findall(q(Z, X), price(beer, Z, M)[source(X)], L);
+      .min(L, Min);
+	   !despieza(Min, Z, Agt);
+	   .print("El precio menor es ", Z);
+	   */
+	   .random(X);
       ?nbeersPerTime(NBeer);
-	  //.print(Agt);
-	   .send(Agt, achieve, order(beer,NBeer, M));
+	  if(X < 0.3){
+	  
+	   .send(supermarket1, achieve, order(beer,NBeer, M));
+	   }
+	   if(X > 0.3){
+	   	.send(supermarket2, achieve, order(beer,NBeer, M));
+	   }
       .println("El robot mayordomo ha realizado un pedido al supermercado.");
       +ordered(beer).
 	  
@@ -145,7 +157,7 @@ too_much(B) :-
 // when the supermarket makes a delivery, try the 'has' goal again
 +delivered(beer,Qtd,OrderId, N)[source(S)]
   <-  ?money(M)[source(self)];
-      ?price(beer, P, N)[source(S)];
+      ?price(beer, P, N);
       -+money(M-P*Qtd);
       .send(rpedidos, tell, money(P*Qtd));
       .send(rpedidos, tell, delivered(beer, Qtd, OrderId, S, N)).

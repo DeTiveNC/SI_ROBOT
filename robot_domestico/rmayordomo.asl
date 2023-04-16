@@ -37,7 +37,7 @@ too_much(B) :-
       !bring(owner, beer).
 
 +!bring(owner,beer) [source(self)]
-   :  too_much(beer) & limit(beer,L) & cerveza_escogida(M) 
+   :  too_much(beer) & limit(beer,L)
    <- .concat("The Department of Health does not allow me to give you more than ", L,
               " beers a day! I am very sorry about that!",M);
       .send(owner,tell,msg(M));
@@ -132,7 +132,6 @@ too_much(B) :-
 	   .random(X);
       ?nbeersPerTime(NBeer);
 	  if(X < 0.3){
-	  
 	   .send(supermarket1, achieve, order(beer,NBeer, M));
 	   }
 	   if(X > 0.3){

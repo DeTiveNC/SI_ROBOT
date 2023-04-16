@@ -17,7 +17,7 @@ contarPlaLav(plato, 0).
       .abolish(hay_basura(rlimpiador, trash, plato));
 	  .send(rmayordomo, achieve, limpiezaTerminada);
 	  -+contarPlaLav(plato,D);
-	  if(D >= 4){
+	  if(D >= 3){
 	  	!hay_platosLavavajillas(rlavador, plato);
 	  }.
 

@@ -18,8 +18,6 @@ money(500).
       +asked(beer);
 	  .wait(200).
 
-	  
-	  
 +!restarDinero <- 
 	.print("Cerveza pagada.");
 	?money(M);

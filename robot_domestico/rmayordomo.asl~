@@ -4,7 +4,7 @@
 available(beer,fridge).
 
 // Dinero que posee el robot mayordomo
-money(50).
+//money(50).
 
 // Limite de cerveza que puede beber el owner
 limit(beer,5).
@@ -28,25 +28,15 @@ too_much(B) :-
 !pide_lista_productos_super.
 
 /* Plans */
-+!pideDinero : true <-
-	?precioCerveza(Cant);
-	.print("El precio de la cerveza es: ", Cant);
-	//+pagaCerveza(Cant);
-	.send(owner, tell, pagaCerveza(Cant)).
-	
-+money(Cant)[source(owner)] <- 
-	.print("Me dieron: ", Cant, " dinero");	
-	?money(M);
-	X = M + Cant;
-	-+money(X).
-	//-pagaCerveza(Cant).
+
++money(Cant)[source(owner)] <- -+money(Cant);	 .send(owner, tell, restarDinero).
 
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer)[source(self)]
    :  trashInEnv(T) & T>0 & not entornoLimpio & cerveza_escogida(M) 
    <- .println("El robot mayordomo revisa si hay basura");
       +entornoLimpio;
-      .send(rlimpiador, tell, hay_basura(rlimpiador, trash));
+      .send(rlimpiador, tell, hay_basura(rlimpiador, trash, plato));
       !bring(owner, beer).
 
 +!bring(owner,beer) [source(self)]
@@ -78,9 +68,9 @@ too_much(B) :-
 
 +!hasBeer(owner) // : not too_much(beer)
 <- hand_in(beer);
-   .println("El robot mayordomo pregunta al owner si ha cogido la cerveza");
+   .println("El robot mayordomo pregunta al owner si ha cogido la cerveza y un pincho");
    ?has(owner,beer);
-   .println("El Owner tiene la cerveza.");
+   .println("El Owner tiene la cerveza y pincho.");
    // remember that another beer has been consumed
    .date(YY,MM,DD); .time(HH,NN,SS);
    +consumed(YY,MM,DD,HH,NN,SS,beer);
@@ -93,13 +83,13 @@ too_much(B) :-
 	.send(myOwner,tell,msg(M)).
 */
 
-/*
+
 +!bring(owner,beer) [source(self)]
-   :  not available(beer,fridge) & not ordered(beer)
-   <- .println("El robot mayordomo realiza un pedido");
-      !comprar(supermarket, beer);
+   :  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M)
+   <- .println("El robot mayordomo realiza un pedido de ", M);
+      !comprar(supermarket, beer, M);
       !bring(owner, beer).
-*/
+
 
 
 +!bring(owner, beer): cerveza_escogida(M)
@@ -127,19 +117,22 @@ too_much(B) :-
 	.send(supermarket1, achieve, lista_productos(beer));
 	.send(supermarket2, achieve, lista_productos(beer)).
 
-+!lista_productos(beer)[source(owner)]: seleccion_prodcutos(L1)[source(supermarket1)] & seleccion_productos(L2)[source(supermarket2)] <-
++!lista_productos(beer): seleccion_productos(L1)[source(supermarket1)] & seleccion_productos(L2)[source(supermarket2)] <-
 	.print("QQQQQQQQQQQQQLLLLLLLLLLLLLLLQQQQQQQQQQQQQQQQQQQQQLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
 	.concat(L1,L2,L3);
 	.print(L3);
 	.wait(10);
-	.send(owner, tell, seleccionProductos(L3)).
+	.send(owner, tell, seleccionProductos(beer,L3)).
+	
++!lista_productos(beer): true
+	<- .print("Aun no llegaron los productos");
+		.wait(100);
+		!lista_productos(beer).
+	
 	//.wait(100);
 	//.findall(q(M, C), price(P, C, M), L);
 	//.print("Cervezas disponibles: ", L);
 	//!dame_listado.
-+!lista_productos(P)[source(owner)]
-	<- .wait(10);
-		!lista_productos(P).		
 
 /*+!dame_listado(P) : seleccion_prodcutos(L1)[source(supermarket1)] & seleccion_productos(L2)[source(supermarket2)]
 	<- .print("QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ");
@@ -150,23 +143,23 @@ too_much(B) :-
 	   //.print(M);
 	   .send(owner, tell, seleccionpProductos(L3)).*/
 
-+!comprar(supermarket, beer, M) : not ordered(beer) & price(L1)[source(supermarket1)] & price(L2)[source(supermarket2)]
-   <- 	.concat(L1, L2, L3);
++!comprar(supermarket, beer, M) : not ordered(beer)
+   <- 	
    		.print("ESTA ENTRANDO AQUI --------------------------------");
-		for(.member(I, L3)){
-		.print("*********************************************************************************",I);//comprobar que si la marca coincide y el precio es el minimo es ese
-   			}
+		
 		.print("ESTA ENTRANDO AQUI --------------------------------");
-		.print(L);
-      .min(L, Min);
+		
+     
 	  .print("ESTA ENTRANDO AQUI --------------------------------");
-	   !despieza(Min, Z, Agt);
-	   .print("El precio menor es ", Z);
+	   
+	  
 	   //+precioCerveza(Z);
       ?nbeersPerTime(NBeer);
-	   .send(Agt, achieve, order(beer,NBeer));
+	  //.print(Agt);
+	   .send(self, achieve, order(beer,NBeer, M));
       .println("El robot mayordomo ha realizado un pedido al supermercado.");
       +ordered(beer).
+	  
 +!comprar(supermarket, beer, M).
 
 +!despieza([],[],[]).
@@ -182,12 +175,12 @@ too_much(B) :-
      !go_at(rmayordomo,P).
 
 // when the supermarket makes a delivery, try the 'has' goal again
-+delivered(beer,Qtd,OrderId)[source(S)]
++delivered(beer,Qtd,OrderId, N)[source(S)]
   <-  ?money(M)[source(self)];
       ?price(beer, P, N)[source(S)];
       -+money(M-P*Qtd);
       .send(rpedidos, tell, money(P*Qtd));
-      .send(rpedidos, tell, delivered(beer, Qtd, OrderId, S)).
+      .send(rpedidos, tell, delivered(beer, Qtd, OrderId, S, N)).
   
 +available(beer, fridge)[source(rpedidos)]
    <- -ordered(beer).
@@ -212,4 +205,5 @@ too_much(B) :-
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-+hola[source(owner)] <- .print("Owner quiere que Moreno nos Apruebe SI :)").
++hola[source(owner)] <- .print("Hola, te cuento un chiste?"); .send(rmayordomo, tell, chiste).
++contarChiste[source(owner)] <- .print("Con evidentes señales de enfado, la maestra pregunta: Jaimito, ¿te has copiado de Pedro en el examen? Con cara de inocente, Jaimito responde: No, maestra. Entonces, ¿por qué en la respuesta de la pregunta 3, donde Pedro ha puesto no lo sé, has escrito yo tampoco").

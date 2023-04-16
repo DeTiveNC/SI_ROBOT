@@ -3,13 +3,6 @@ platoVa(plato, 0).
 money(500).
 
 /* Initial goals */
-+pagaCerveza(Cant)[source(rmayordomo)] : money(M) & (M >= Cant) <-
-	!restarDinero(Cant);
-	-+pagaCerveza(0)[source(rmayordomo)].
-	  
-+pagaCerveza(Cant)[source(rmayordomo)] : money(M) & (M < Cant) <-
-
-	.print("Cerveza no se puede pagar.").
 
 !drink(owner, beer).
 !pide_lista_productos.
@@ -17,7 +10,8 @@ money(500).
 !check_bored. // initial goal: verify whether I am getting bored
 
 +!get(beer) : not asked(beer)
-   <- .send(rmayordomo, tell, asked(beer));
+   <- .print("Cuantas veces pasa por aqui xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+   	.send(rmayordomo, tell, asked(beer));
       // Y = 50;
    	 // .send(rmayordomo, tell, money(Y)); 	   	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
@@ -58,8 +52,7 @@ money(500).
       ?trash(can,C);
 	  ?platoVa(plato, D);
       -+trash(can, C+1);
-	  -platoVa(plato, D);
-	  +platoVa(plato, D+1);
+	  -+platoVa(plato, D+1);
       !lanzar(can);
 	  !recogerplatosucio(plato);
 	  
@@ -102,17 +95,11 @@ money(500).
    <- .println("Owner le entrega basura al robot mayordomo.");
       .send(rmayordomo, achieve, recogerBasuraOwner(Elem, C));
       -+trash(Elem, 0).
-	  
-+!sip(beer): pagaCerveza(Cant)[source(rmayordomo)] & Cant > 0 <-
-	!restarDinero(Cant);
-	-pagaCerveza(Cant)[source(rmayordomo)];
-	!sip(beer).
-	
-
+*/
 +!sip(beer) : not has(owner,beer)
    <- true.
 +!sip(beer): has(owner,beer) & asked(beer)
-   <-.println("Owner va a empezar a beber cerveza.");
+   <- .println("Owner va a empezar a beber cerveza y comer un pincho.");
       -asked(beer);
       sip(beer);
       !sip(beer).
@@ -135,15 +122,16 @@ money(500).
 	.wait(100);
 	!escoge_productos.
 
-+!escoge_productos: seleccionProductos(L1)[source(rmayordomo)]
-	<- .print("Eeeeeestas son las cervezas que me han llegado suuuuuu", L1).
++!escoge_productos: seleccionProductos(beer, L1)[source(rmayordomo)]
+	<- //.print("Eeeeeestas son las cervezas que me han llegado suuuuuu", L1).
 	
-	/*.concat(L1,L2,L3);
-	   .print(L3);   
-	   .print(X);
+		.random(L1, X);
+		//.concat(L1,L2,L3);
+	   //.print(L3);   
+	   //.print("Cerveza elegida: ", X);
 	   !despieza(X, M, _); // _ = no me interesa valor
-	   .print(M); 
-	   .send(rmayordomo, tell, cerveza_escogida(M)).*/
+	   .print("Cerveza elegida: ", M); 
+	   .send(rmayordomo, tell, cerveza_escogida(M)).
 	   
 	   
 +!despieza([],[],[]).

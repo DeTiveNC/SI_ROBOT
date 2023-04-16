@@ -6,18 +6,18 @@ money(500).
 
 !drink(owner, beer).
 !pide_lista_productos.
-// !get(beer).   // initial goal: get a beer
+
 !check_bored. // initial goal: verify whether I am getting bored
 
 +!get(beer) : not asked(beer)
-   <- .print("Cuantas veces pasa por aqui xxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-   	.send(rmayordomo, tell, asked(beer));
-      // Y = 50;
-   	 // .send(rmayordomo, tell, money(Y)); 	   	
+   <- 
+   	  .send(rmayordomo, tell, asked(beer));
+      Y = 50;
+   	 .send(rmayordomo, tell, money(Y)); 	   	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer);
 	  .wait(200).
-	  //!restarDinero.
+
 	  
 	  
 +!restarDinero(Cant): Cant > 0 <- 
@@ -25,7 +25,6 @@ money(500).
 	.send(rmayordomo, tell, money(X));
 	.print("Cerveza pagada.");
 	?money(M);
-	   //-money(M);
        L = M - 50;
       -+money(L).
 	  
@@ -35,15 +34,7 @@ money(500).
    <- .println("Owner no tiene cerveza y un pincho.");
       .random(X);
       !get(beer);
-      /*
-      Comentado para probar los robots
-      if(X>0.7){
-         !cogerCerveza(owner, beer);
-      } else{
-         !get(beer);
-      }
-      */
-      
+ 
       !drink(owner, beer).
 
 +!drink(owner, beer) : has(owner, beer)
@@ -55,18 +46,6 @@ money(500).
 	  -+platoVa(plato, D+1);
       !lanzar(can);
 	  !recogerplatosucio(plato);
-	  
-      /*
-      Comentado para probar los robots
-      if(X < 0.33){
-         !lanzar(can);
-      }elif(X < 0.66){
-         !darBasuraRobot(can);   
-      } else{
-         !tirarLata(owner, can);
-      }
-      */
-      
       !drink(owner, beer).
 
 +!drink(owner, beer) : ~couldDrink(beer)
@@ -88,14 +67,7 @@ money(500).
       generatePlato(Elem);
       -+platoVa(Elem, D-1).
 +!recogerplatosucio.	  
- 
 
-/*
-+!darBasuraRobot(Elem) : trash(can, C) & C>0
-   <- .println("Owner le entrega basura al robot mayordomo.");
-      .send(rmayordomo, achieve, recogerBasuraOwner(Elem, C));
-      -+trash(Elem, 0).
-*/
 +!sip(beer) : not has(owner,beer)
    <- true.
 +!sip(beer): has(owner,beer) & asked(beer)
@@ -108,27 +80,16 @@ money(500).
       .println("Owner está bebiendo cerveza y comiendo un pincho.");
       !sip(beer).
 
-/*
-+!check_bored: trashInEnv(T) & T > 0
-	<- !go_at(owner, trash);
-      pickTrash(owner, trash);
-      !check_bored.
-*/
 
 +!pide_lista_productos 
 	<-
-	.print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
 	.send(rmayordomo, achieve, lista_productos(beer));	
 	.wait(100);
 	!escoge_productos.
 
 +!escoge_productos: seleccionProductos(beer, L1)[source(rmayordomo)]
-	<- //.print("Eeeeeestas son las cervezas que me han llegado suuuuuu", L1).
-	
+	<-
 		.random(L1, X);
-		//.concat(L1,L2,L3);
-	   //.print(L3);   
-	   //.print("Cerveza elegida: ", X);
 	   !despieza(X, M, _); // _ = no me interesa valor
 	   .print("Cerveza elegida: ", M); 
 	   .send(rmayordomo, tell, cerveza_escogida(M)).

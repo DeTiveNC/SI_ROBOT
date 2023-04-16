@@ -55,7 +55,7 @@ too_much(B) :-
    <- .println("El robot mayordomo va a buscar una cerveza");
       !go_at(rmayordomo,fridge);
       open(fridge);
-      get(beer);
+      get(beer, pinchito);
 	  !comprar(supermarket, beer, M);
       close(fridge);
       !go_at(rmayordomo,couch);

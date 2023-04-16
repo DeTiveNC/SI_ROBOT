@@ -56,6 +56,7 @@ too_much(B) :-
 	  !comprar(supermarket, beer, M);
       close(fridge);
       !go_at(rmayordomo,couch);
+	  .wait(1000);
       !hasBeer(owner);
       .abolish(asked(beer));
       !bring(owner, beer).
@@ -121,7 +122,7 @@ too_much(B) :-
 
 
 +!comprar(supermarket, beer, M)[source(Agt)] : not ordered(beer)
-   <- 	
+   <- 
       ?nbeersPerTime(NBeer);
 	  //.print(Agt);
 	   .send(Agt, achieve, order(beer,NBeer, M));

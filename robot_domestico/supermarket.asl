@@ -1,39 +1,48 @@
 last_order_id(1). // initial belief
-moneySuper(500).
+moneySuper(1000).
 
 
-stock(beer, 11).
+stock(beer, 11, estrella).
+stock(beer, 11, aguila).
+stock(beer, 11, volldamm).
+stock(beer, 11, redvintage).
+stock(beer, 11, heineken).
 
 !sendPrice.
 
-+!sendPrice : price(beer, P)
-  <-  .println("Envío de precio al robot mayordomo");
-      .send(rmayordomo, tell, price(beer, P));
-	  ?stock(beer, Z);
-	  ?moneySuper(B);
-	 -moneySuper(B);
-	 Y = P*Z;
-	 C = B - Y;
-	 +moneySuper(C).
+/* Plan */
+	
 +!sendPrice : true
    <- .println("No hay datos sobre precios en este supermercado").
+   
++!lista_productos(P)[source(rmayordomo)]: price(beer, _, _) <-
+	.println("Envío de precio al robot mayordomo");
+	.findall(q(M, C), price(P, C, M), L);
+	.print("Cervezas disponibles: ", L);
+	.send(rmayordomo, tell, seleccion_productos(L)).	
+	
++!lista_productos(P): true
+	<- .print("No hay datos sobre este producto").
 
 // plan to achieve the goal "order" for agent Ag
-+!order(Product,Qtd)[source(Ag)] : stock(Product, P) & P >= Qtd
-  <- ?last_order_id(N);
++!order(Product,Qtd, M)[source(Ag)] : stock(Product, P, O) & P >= Qtd & M = O
+  <- 
+  ?last_order_id(N);
      OrderId = N + 1;
-	  ?price(beer, Z);
+	  ?price(beer, F, M);
      -+last_order_id(OrderId); 
-     -stock(beer, _);
-     +stock(beer, P-Qtd);
+     -stock(beer, _, M);
+     +stock(beer, P-Qtd, M);
      deliver(Product,Qtd);
+	 ?price(beer, F, Nm);
 	 ?moneySuper(A);
 	 -moneySuper(A);
-	 X = Qtd*Z;
+	 X = Qtd*P;
 	 +moneySuper(A+X);
-     .send(Ag, tell, delivered(Product,Qtd,OrderId)).
+	 .send(rmayordomo, tell, price(beer, Cant, M));
+     .send(Ag, tell, delivered(Product,Qtd,OrderId, M)).
 
-+!order(Product,Qtd)[source(Ag)] : stock(Product, P) & P < Qtd
++!order(Product,Qtd, M)[source(Ag)] : stock(Product, P, M) & P < Qtd
   <- .print("Out of stock: ", Product);
      .send(Ag, tell, not_enough_stock(Product, Qtd, P)).
 

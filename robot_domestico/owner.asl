@@ -5,27 +5,34 @@ money(500).
 /* Initial goals */
 
 !drink(owner, beer).
+!pide_lista_productos.
 
 !check_bored. // initial goal: verify whether I am getting bored
 
 +!get(beer) : not asked(beer)
-   <-  
+   <- 
    	  .send(rmayordomo, tell, asked(beer));
-       Y = 50;
-   	  .send(rmayordomo, tell, money(Y)); 	   	
-      .println("Owner ha pedido una cerveza y un pincho al robot mayordomo.");
-      +asked(beer).
+      Y = 50;
+   	 .send(rmayordomo, tell, money(Y)); 	   	
+      .println("Owner ha pedido una cerveza al robot mayordomo.");
+      +asked(beer);
+	  .wait(200).
 
-+restarDinero <- 
-	   ?money(A);
-	   -money(A);
-       X = A - 50;
-      +money(X).
+	  
+	  
++!restarDinero <- 
+	.print("Cerveza pagada.");
+	?money(M);
+       L = M - 50;
+      -+money(L).
+	  
++!restarDinero(Cant): Cant == 0 <- true.
+	  
 +!drink(owner, beer) : not has(owner, beer) & not asked(beer)
    <- .println("Owner no tiene cerveza y un pincho.");
       .random(X);
       !get(beer);
-
+ 
       !drink(owner, beer).
 
 +!drink(owner, beer) : has(owner, beer)
@@ -37,8 +44,6 @@ money(500).
 	  -+platoVa(plato, D+1);
       !lanzar(can);
 	  !recogerplatosucio(plato);
-
-      
       !drink(owner, beer).
 
 +!drink(owner, beer) : ~couldDrink(beer)
@@ -60,8 +65,6 @@ money(500).
       generatePlato(Elem);
       -+platoVa(Elem, D-1).
 +!recogerplatosucio.	  
- 
-
 
 +!sip(beer) : not has(owner,beer)
    <- true.
@@ -75,6 +78,28 @@ money(500).
       .println("Owner está bebiendo cerveza y comiendo un pincho.");
       !sip(beer).
 
+
++!pide_lista_productos 
+	<-
+	.send(rmayordomo, achieve, lista_productos(beer));	
+	.wait(100);
+	!escoge_productos.
+
++!escoge_productos: seleccionProductos(beer, L1)[source(rmayordomo)]
+	<-
+		.random(L1, X);
+	   !despieza(X, M, _); // _ = no me interesa valor
+	   .print("Cerveza elegida: ", M); 
+	   .send(rmayordomo, tell, cerveza_escogida(M)).
+	   
+	   
++!despieza([],[],[]).
++!despieza(q(X,Y),X,Y).
+
++!escoge_productos
+	<- .wait(100);
+		!escoge_productos.
+		
 +!check_bored : true
    <- .random(X); .wait(X*5000+2000);   // i get bored at random times
    	  .random(Y);

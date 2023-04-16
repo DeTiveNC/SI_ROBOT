@@ -229,6 +229,14 @@ public class HouseModel extends GridWorldModel {
             setAgPos(agent, getAgPos(agent));
         }
 
+        /*
+        if (view != null) {
+            view.update(lFridge.x,lFridge.y);
+            view.update(lOwner.x,lOwner.y);
+            view.update(lDelivery.x, lDelivery.y);
+            view.update(lBin.x, lBin.y);
+        }
+        */
         
         return true;
     }

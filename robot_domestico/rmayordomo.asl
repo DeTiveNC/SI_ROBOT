@@ -93,14 +93,14 @@ too_much(B) :-
    	  .wait(100);
       !bring(owner, beer).
 
-
+/*
 -!bring(K,V)
    :  true
    <- .current_intention(I);
       .print("Failed to achieve goal '!has(K,V)'. Current intention is: ",I);
 	  .print(K);
 	  .print(V).
-
+	*/ 
 +!pide_lista_productos_super 
 	<-
 

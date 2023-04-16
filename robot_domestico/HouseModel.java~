@@ -70,9 +70,6 @@ public class HouseModel extends GridWorldModel {
 	//Platos Limpios
 	int platosLimpios = 0;
 	
-	//Platos a llevar a Lacena
-	int platosLacena = 0;
-	
 	//Platos en la lacena
 	int platosEnLacena = 0;
 	
@@ -336,9 +333,9 @@ public class HouseModel extends GridWorldModel {
 	
    // Poner los platos en la lacena
    boolean vaciarLavavajillas(){
-        if(platosLimpios > 0){
-			platosLacena+=platosLimpios;
-            platosLimpios = 0;
+        if(platosLimpiar > 0){
+			platosLimpios+=platosLimpiar;
+            platosLimpiar = 0;
 			
         } 
 		  if (view != null) view.update(lLavavajillas.x,lLavavajillas.y);
@@ -347,10 +344,8 @@ public class HouseModel extends GridWorldModel {
 	
 	// Poner platos lacena
 	boolean ponerPlatos(){
-		if(platosLacena > 0){
-			platosEnLacena+=platosLacena;
-			platosLacena = 0;
-		}
+	    platosEnLacena+=platosLimpios;
+		platosLimpios = 0;
 		if (view != null) view.update(lLacena.x,lLacena.y);
             return true;
 	}
@@ -381,7 +376,13 @@ public class HouseModel extends GridWorldModel {
             location.equals(lCouch) &&
             location.equals(lDelivery) &&
 			location.equals(lLavavajillas) &&
-			location.equals(lLacena)
+			location.equals(lLacena) &&
+			lFridgePositions.contains(location) &&
+			lBinPositions.contains(location) &&
+			lCouchPositions.contains(location) &&
+			lDeliveryPositions.contains(location) &&
+			lLavavajillasPositions.contains(location) &&
+			lLacenaPositions.contains(location)
         );
         
         add(TRASH, location);

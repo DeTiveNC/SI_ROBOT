@@ -80,9 +80,9 @@ too_much(B) :-
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer)[source(self)] 
    :  trashInEnv(T) & T>0 & not entornoLimpio
-   <- .println("El robot mayordomo revisa si hay basura");
+   <- .println("El robot mayordomo revisa si hay basura y platos a recoger");
       +entornoLimpio;
-      .send(rlimpiador, tell, hay_basura(rlimpiador, trash));
+      .send(rlimpiador, tell, hay_basura(rlimpiador, trash, plato));
       !bring(owner, beer).
 
 +!bring(owner,beer) [source(self)]
@@ -98,10 +98,10 @@ too_much(B) :-
 
 +!bring(owner,beer)[source(self)] 
    :  available(beer,fridge) & not too_much(beer) & asked(beer)
-   <- .println("El robot mayordomo va a buscar una cerveza");
+   <- .println("El robot mayordomo va a buscar una cerveza y un pincho");
       !go_at(rmayordomo,fridge);
       open(fridge);
-      get(beer);
+      get(beer,pinchito);
 	  !comprar(supermarket, beer);
       close(fridge);
       !go_at(rmayordomo,couch);
@@ -111,9 +111,9 @@ too_much(B) :-
 
 +!hasBeer(owner) // : not too_much(beer)
 <- hand_in(beer);
-   .println("El robot mayordomo pregunta al owner si ha cogido la cerveza");
+   .println("El robot mayordomo pregunta al owner si ha cogido la cerveza y un pincho");
    ?has(owner,beer);
-   .println("El Owner tiene la cerveza.");
+   .println("El Owner tiene la cerveza y pincho.");
    // remember that another beer has been consumed
    .date(YY,MM,DD); .time(HH,NN,SS);
    +consumed(YY,MM,DD,HH,NN,SS,beer).

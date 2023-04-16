@@ -42,8 +42,7 @@ money(500).
       ?trash(can,C);
 	  ?platoVa(plato, D);
       -+trash(can, C+1);
-	  -platoVa(plato, D);
-	  +platoVa(plato, D+1);
+	  -+platoVa(plato, D+1);
       !lanzar(can);
 	  !recogerplatosucio(plato);
 	  

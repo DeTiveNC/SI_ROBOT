@@ -22,53 +22,6 @@ too_much(B) :-
    limit(B,Limit) &
    QtdB >= Limit.
 
-/*
-+!bring(myOwner, beer) <-
-	+asked(beer).
-	
-+!bringBeer : healthMsg(_) <- 
-	!go_at(myRobot,base);
-	.println("El Robot descansa porque Owner ha bebido mucho hoy.").
-
-+!bringBeer : asked(beer) & not healthMsg(_) <- 
-	.println("Owner me ha pedido una cerveza.");
-	!go_at(myRobot,fridge);
-	!take(fridge,beer);
-	!go_at(myRobot,myOwner);
-	!hasBeer(myOwner);
-	.println("Ya he servido la cerveza y elimino la petición.");
-	.abolish(asked(Beer));
-	!bringBeer.
-+!bringBeer : not asked(beer) & not healthMsg(_) <- 
-	.wait(2000);
-	.println("Robot esperando la petición de Owner.");
-	!bringBeer.
-
-+!take(fridge, beer) : not too_much(beer) <-
-	.println("El robot está cogiendo una cerveza.");
-	!check(fridge, beer).
-+!take(fridge,beer) : too_much(beer) & limit(beer, L) <-
-	.concat("The Department of Health does not allow me to give you more than ", L," beers a day! I am very sorry about that!", M);
-	-+healthMsg(M).
-	
-+!check(fridge, beer) : not ordered(beer) & available(beer,fridge) <-
-	.println("El robot está en el frigorífico y coge una cerveza.");
-	.wait(1000);
-	open(fridge);
-	.println("El robot abre la nevera.");
-	get(beer);
-	.println("El robot coge una cerveza.");
-	close(fridge);
-	.println("El robot cierra la nevera.").
-+!check(fridge, beer) : not ordered(beer) & not available(beer,fridge) <-
-	.println("El robot está en el frigorífico y hace un pedido de cerveza.");
-	!orderBeer(mySupermarket);
-	!check(fridge, beer).
-+!check(fridge, beer) <-
-	.println("El robot está esperando ................");
-	.wait(5000);
-	!check(fridge, beer).
-*/
 
 !bring(owner, beer).
 
@@ -118,19 +71,7 @@ too_much(B) :-
    .date(YY,MM,DD); .time(HH,NN,SS);
    +consumed(YY,MM,DD,HH,NN,SS,beer).
 
-/*
-+!hasBeer(myOwner) : too_much(beer) & healthMsg(M) <- 
-	//.abolish(msg(_));
-	.send(myOwner,tell,msg(M)).
-*/
 
-/*
-+!bring(owner,beer) [source(self)]
-   :  not available(beer,fridge) & not ordered(beer)
-   <- .println("El robot mayordomo realiza un pedido");
-      !comprar(supermarket, beer);
-      !bring(owner, beer).
-*/
 +!bring(owner, beer)
    <- !go_at(rmayordomo, baseRMayordomo);
       .wait(2000);

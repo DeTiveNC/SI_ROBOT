@@ -26,7 +26,7 @@ too_much(B) :-
 
 /* Plans */
 
-+money(Cant)[source(owner)] <- -+money(Cant);	 .send(owner, achieve, restarDinero).
++money(Cant)[source(owner)] <- -+money(Cant);	 .send(owner, achieve, restarDinero(Cant)).
 
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer)[source(self)]

@@ -23,11 +23,13 @@ too_much(B) :-
 
 /* Objetivos */
 
-!bring(owner, beer).
+!bring(owner1, beer).
 !pide_lista_productos_super.
 
 
-+money(C)[source(owner)] <- -+money(C);	 .send(owner, achieve, restarDinero(C)).
++money(C)[source(Agt)]
+	<-   -+money(C);
+		.send(Agt, achieve, restarDinero(C)).
 
 /* Planes */
 
@@ -50,19 +52,20 @@ too_much(B) :-
 
 /*
 	lista_productos/1: Cerveza
-	private
+	public: owner
 	return: devuelve la lista de productos de los dos supermercados en una lista y se las envía al owner
 			RMAYORDOMO TIENE LA RESONSABILIDAD DE RECONOCER LOS DIFERNTES SUPERMERCADOS
 	TODO: hacer un findall para no meter la seleccion_productos agente por agente	
 */	   
-+!lista_productos(beer): seleccion_productos(L1)[source(supermarket1)] & seleccion_productos(L2)[source(supermarket2)] 
++!lista_productos(beer, Agt): seleccion_productos(L1)[source(supermarket1)] & seleccion_productos(L2)[source(supermarket2)] 
 	<-.concat(L1,L2,L3);
-	  .send(owner, tell, seleccionProductos(beer,L3)).	  
+	.print("mandando productos a agt ", Agt);
+	  .send(Agt, tell, seleccionProductos(beer,L3)).	  
 	  
-+!lista_productos(beer): true
++!lista_productos(beer, Agt): true
 	<- .print("Aun no llegaron los productos");
 		.wait(100);
-		!lista_productos(beer).
+		!lista_productos(beer, Agt).
 		
 /*
 	hasBeer/1 -> Owner
@@ -70,10 +73,10 @@ too_much(B) :-
 	return: coge la cerveza y se la entrega al owner
 */	
 		
-+!hasBeer(owner)
++!hasBeer(Agt)
 <- hand_in(beer);
    .println("El robot mayordomo pregunta al owner si ha cogido la cerveza y un pincho");
-   ?has(owner,beer);
+   ?has(Agt, beer);
    .println("El Owner tiene la cerveza y pincho.");
    // remember that another beer has been consumed
    .date(YY,MM,DD); 
@@ -115,24 +118,30 @@ too_much(B) :-
 	  
 +!comprar(supermarket, beer, M).
 
++!escoge_owner(owner1, P)
+	<- !bring(owner2, P).
+	
++!escoge_owner(owner2, P)
+	<- !bring(owner1, P).
+
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
-+!bring(owner,beer)[source(self)]:  trashInEnv(T) & T>0 & not entornoLimpio & cerveza_escogida(M) 
++!bring(Agt,beer)[source(self)]:  trashInEnv(T) & T>0 & not entornoLimpio & cerveza_escogida(M) 
    <- .println("El robot mayordomo revisa si hay basura");
       +entornoLimpio;
       .send(rlimpiador, tell, hay_basura(rlimpiador, trash, plato));
-      !bring(owner, beer).
+	  !escoge_owner(Agt, beer).
 
-+!bring(owner,beer) [source(self)]:  too_much(beer) & limit(beer,L)
++!bring(Agt,beer) [source(self)]:  too_much(beer) & limit(beer,L)
    <- .concat("The Department of Health does not allow me to give you more than ", L,
               " beers a day! I am very sorry about that!",M);
-      .send(owner,tell,msg(M));
-      .send(owner, tell, ~couldDrink(beer));
+      .send(Agt,tell,msg(M));
+      .send(Agt, tell, ~couldDrink(beer));
       !go_at(rmayordomo, baseRMayordomo);
       .println("El Robot mayordomo descansa porque Owner ha bebido mucho hoy.");
       .wait(10000);
-      !bring(owner, beer).
+	  !escoge_owner(Agt, beer).
 
-+!bring(owner,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) 
++!bring(Agt,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) 
    <- .println("El robot mayordomo va a buscar una cerveza");
       !go_at(rmayordomo,fridge);
       open(fridge);
@@ -141,34 +150,26 @@ too_much(B) :-
       close(fridge);
       !go_at(rmayordomo,couch);
 	  .wait(1000);
-      !hasBeer(owner);
+      !hasBeer(Agt);
       .abolish(asked(beer));
-      !bring(owner, beer).	  
+	  !escoge_owner(Agt, beer).	  
    
-+!bring(owner,beer) [source(self)]:  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M)
++!bring(Agt,beer) [source(self)]:  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M)
    <- .println("El robot mayordomo realiza un pedido de ", M);
       !comprar(supermarket, beer, M);
-      !bring(owner, beer).
+	  !escoge_owner(Agt, beer).
 
-+!bring(owner, beer): cerveza_escogida(M)
++!bring(Agt, beer): cerveza_escogida(M)
    <- !go_at(rmayordomo, baseRMayordomo);
       .wait(2000);
 	   .println("El robot mayordomo está esperando.");
-	   !bring(owner, beer).
-	   
-+!bring(owner,beer)[source(self)]
+	   !escoge_owner(Agt, beer).
+	  	   
++!bring(Agt,beer)[source(self)]
    <- .println("El robot mayordomo espera a que owner elija cerveza");
    	  .wait(100);
-      !bring(owner, beer).
-/*
--!bring(K,V)
-   :  true
-   <- .current_intention(I);
-      .print("Failed to achieve goal '!has(K,V)'. Current intention is: ",I);
-	  .print(K);
-	  .print(V).
-	*/ 
-	
+	  !escoge_owner(Agt, beer).     
+
 +!limpiezaTerminada <- -entornoLimpio.
 
 // when the supermarket makes a delivery, try the 'has' goal again
@@ -185,7 +186,8 @@ too_much(B) :-
 +not_enough_stock(Product, Qtd, Stock)[source(supermarket)] : true
    <- .concat("The supermarket told me they don't have enouth ", Product, 
          "to fullfill my order. (Orderer: ", Qtd, ", Stock: ", Stock, ")", M);
-      .send(owner, tell, msg(M)).
+      .send(owner1, tell, msg(M));
+	  .send(owner2, tell, msg(M)).
 
 // when the fridge is opened, the beer stock is perceived
 // and thus the available belief is updated
@@ -202,5 +204,5 @@ too_much(B) :-
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).
-+hola[source(owner)] <- .print("Hola, te cuento un chiste?"); .send(rmayordomo, tell, chiste).
-+contarChiste[source(owner)] <- .print("Con evidentes señales de enfado, la maestra pregunta: Jaimito, ¿te has copiado de Pedro en el examen? Con cara de inocente, Jaimito responde: No, maestra. Entonces, ¿por qué en la respuesta de la pregunta 3, donde Pedro ha puesto no lo sé, has escrito yo tampoco").
++hola[source(Agt)] <- .print("Hola, te cuento un chiste?"); .send(rmayordomo, tell, chiste).
++contarChiste[source(Agt)] <- .print("Con evidentes señales de enfado, la maestra pregunta: Jaimito, ¿te has copiado de Pedro en el examen? Con cara de inocente, Jaimito responde: No, maestra. Entonces, ¿por qué en la respuesta de la pregunta 3, donde Pedro ha puesto no lo sé, has escrito yo tampoco").

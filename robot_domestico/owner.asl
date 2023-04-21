@@ -23,10 +23,10 @@
 trash(can,0).
 platoVa(plato, 0).
 money(500).
-
+.my_name(N).
 /* Objetivos iniciales */
 
-!bebe(owner, beer).
+!bebe(N, beer).
 !pide_lista_productos.
 
 !comprobar_aburrido. // initial goal: verify whether I am getting bored
@@ -61,9 +61,9 @@ money(500).
 */	   
 	   
 +!pide_lista_productos 
-	<-
-	.send(rmayordomo, achieve, lista_productos(beer));	
-	!escoge_cerveza.	   
+	<-.my_name(N);
+	  .send(rmayordomo, achieve, lista_productos(beer, N));	
+	  !escoge_cerveza.	   
 	   
 /*
 	get/1 -> cerveza
@@ -160,26 +160,26 @@ money(500).
 	private
 */	 
 	 
-+!sip(beer) : not has(owner,beer)
++!sip(beer) : .my_name(N) &  not has(N,beer)
    <- true.
-+!sip(beer): has(owner,beer) & asked(beer)
++!sip(beer): .my_name(N) & has(N, beer) & asked(beer)
    <- .println("Owner va a empezar a beber cerveza y comer un pincho.");
       -asked(beer);
       sip(beer);
       !sip(beer).
-+!sip(beer): has(owner,beer) & not asked(beer)
++!sip(beer): .my_name(N) & has(N, beer) & not asked(beer)
    <- sip(beer);
       .println("Owner está bebiendo cerveza y comiendo un pincho.");
       !sip(beer).
 	 
-+!bebe(owner, beer) : not has(owner, beer) & not asked(beer)
++!bebe(Agt, beer) : not has(Agt, beer) & not asked(beer)
    <- .println("Owner no tiene cerveza y un pincho.");
       .random(X);
       !get(beer);
  
-      !bebe(owner, beer).	  
+      !bebe(Agt, beer).	  
 
-+!bebe(owner, beer) : has(owner, beer)
++!bebe(Agt, beer) : has(Agt, beer)
    <- .println("Owner ya tiene una cerveza y se dispone a beberla.");
       !sip(beer);
       ?trash(can,C);
@@ -188,15 +188,15 @@ money(500).
 	  -+platoVa(plato, D+1);
       !lanzar(can);
 	  !recogerplatosucio(plato);
-      !bebe(owner, beer).
+      !bebe(Agt, beer).
 
-+!bebe(owner, beer) : ~couldDrink(beer)
++!bebe(Agt, beer) : ~couldDrink(beer)
    <- .println("Owner ha bebido demasiado por hoy.").	
 
-+!bebe(owner, beer) : not has(owner,beer) & asked(beer)
++!bebe(Agt, beer) : not has(Agt,beer) & asked(beer)
    <- .println("Owner está esperando una cerveza.");
 	   .wait(500);
-	   !bebe(owner, beer).
+	   !bebe(Agt, beer).
 	     		 
 +stock(beer,0)
    :  available(beer,fridge)

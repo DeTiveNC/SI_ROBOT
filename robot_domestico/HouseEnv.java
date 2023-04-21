@@ -43,7 +43,8 @@ public class HouseEnv extends Environment {
 	
     // Acciones de tirar la basura el el cubo
     public static final Literal desecharRLimpiadorTrash = Literal.parseLiteral("desechar(rlimpiador,trash)");
-    public static final Literal desecharOwnerTrash = Literal.parseLiteral("desechar(owner,trash)");
+    public static final Literal desecharOwnerTrash1 = Literal.parseLiteral("desechar(owner1,trash)");
+    public static final Literal desecharOwnerTrash2 = Literal.parseLiteral("desechar(owner2,trash)");
 	
 	// Acciones de eliminar los platos del lavavajillas
     public static final Literal vaciarLa = Literal.parseLiteral("vaciarLa(lavavajillas)");
@@ -51,7 +52,8 @@ public class HouseEnv extends Environment {
 	 public static final Literal ponerPla = Literal.parseLiteral("ponerPla(rlavador, lacena)");
 
     // Percepciones de tener cerveza
-    public static final Literal hasOwnerBeer = Literal.parseLiteral("has(owner,beer)");
+    public static final Literal hasOwnerBeer1 = Literal.parseLiteral("has(owner1,beer)");
+    public static final Literal hasOwnerBeer2 = Literal.parseLiteral("has(owner2,beer)");
 
     // Creencias "at" para el agente mayordomo
     public static final Literal atRMayordomoFridge = Literal.parseLiteral("at(rmayordomo,fridge)");
@@ -80,9 +82,12 @@ public class HouseEnv extends Environment {
     public static final Literal atRPedidosBase = Literal.parseLiteral("at(rpedidos,baseRPedidos)");
 
     // Creencias "at" para el agente owner
-    public static final Literal atOwnerBin = Literal.parseLiteral("at(owner,bin)");
-    public static final Literal atOwnerCouch = Literal.parseLiteral("at(owner,couch)");
-    public static final Literal atOwnerFridge = Literal.parseLiteral("at(owner,fridge)");
+    public static final Literal atOwnerBin1 = Literal.parseLiteral("at(owner1,bin)");
+    public static final Literal atOwnerCouch1 = Literal.parseLiteral("at(owner1,couch)");
+    public static final Literal atOwnerFridge1 = Literal.parseLiteral("at(owner1,fridge)");
+    public static final Literal atOwnerBin2 = Literal.parseLiteral("at(owner2,bin)");
+    public static final Literal atOwnerCouch2 = Literal.parseLiteral("at(owner2,couch)");
+    public static final Literal atOwnerFridge2 = Literal.parseLiteral("at(owner2,fridge)");
 
 
     static Logger logger = Logger.getLogger(HouseEnv.class.getName());
@@ -110,7 +115,8 @@ public class HouseEnv extends Environment {
         clearPercepts("rbasurero");
         clearPercepts("rpedidos");
 		clearPercepts("rlavador");
-        clearPercepts("owner");
+        clearPercepts("owner1");
+        clearPercepts("owner2");
 
         // Obtención de las posiciones de todos los agentes
         Location lRMayordomo = model.getAgPos(model.agents.get("rmayordomo"));
@@ -118,7 +124,8 @@ public class HouseEnv extends Environment {
         Location lRBasurero = model.getAgPos(model.agents.get("rbasurero"));
         Location lRPedidos = model.getAgPos(model.agents.get("rpedidos"));
 		Location lRLavador = model.getAgPos(model.agents.get("rlavador"));
-        Location lOwner = model.getAgPos(model.agents.get("owner"));
+        Location lOwner1 = model.getAgPos(model.agents.get("owner1"));
+        Location lOwner2 = model.getAgPos(model.agents.get("owner2"));
 
         // Percepciones de posición del agente rmayordomo
         if (model.lFridgePositions.contains(lRMayordomo)) {
@@ -176,15 +183,25 @@ public class HouseEnv extends Environment {
         }
 
         // Percepciones de posición del agente owner
-        if (model.lBinPositions.contains(lOwner)){
-            addPercept("owner", atOwnerBin);
+        if (model.lBinPositions.contains(lOwner1)){
+            addPercept("owner1", atOwnerBin1);            
         }
-        else if(model.lCouch.equals(lOwner)){
-            addPercept("owner", atOwnerCouch);
+        if (model.lBinPositions.contains(lOwner2)){
+            addPercept("owner2", atOwnerBin2);
         }
-        else if(model.lFridgePositions.contains(lOwner)){
-            addPercept("owner", atOwnerFridge);
+        else if(model.lCouch.equals(lOwner1)){
+            addPercept("owner1", atOwnerCouch1);
         }
+        else if(model.lCouch.equals(lOwner2)){
+            addPercept("owner2", atOwnerCouch2);
+        }
+        else if(model.lFridgePositions.contains(lOwner1)){
+            addPercept("owner1", atOwnerFridge1);
+        }
+        else if(model.lFridgePositions.contains(lOwner2)){
+            addPercept("owner2", atOwnerFridge2);
+        }
+
 
         // Percepción de stock de cervezas para el agente mayordomo
         if (model.fridgeOpenMayordomo) {
@@ -204,13 +221,18 @@ public class HouseEnv extends Environment {
 
         // Percepción de stock de cervezas para el agente owner
         if (model.fridgeOpenOwner) {
-            addPercept("owner", Literal.parseLiteral("stock(beer,"+model.availableBeers+")"));
+            addPercept("owner1", Literal.parseLiteral("stock(beer,"+model.availableBeers+")"));
+            addPercept("owner2", Literal.parseLiteral("stock(beer,"+model.availableBeers+")"));
         }
 
         // Percepciones de que el owner tiene cerveza para los agentes mayordomo y owner
-        if (model.sipCount > 0) {
-            addPercept("rmayordomo", hasOwnerBeer);
-            addPercept("owner", hasOwnerBeer);
+        if (model.sipCount1 > 0) {
+            addPercept("rmayordomo", hasOwnerBeer1);
+            addPercept("owner1", hasOwnerBeer1);
+        }
+        if (model.sipCount2 > 0) {
+            addPercept("rmayordomo", hasOwnerBeer2);
+            addPercept("owner2", hasOwnerBeer2);
         }
     }
 
@@ -304,47 +326,47 @@ public class HouseEnv extends Environment {
 
         // Acción de abrir el frigorifico
         else if (action.equals(openFridge) 
-            && (ag.equals("rmayordomo") || ag.equals("owner"))) {
+            && (ag.equals("rmayordomo") || (ag.equals("owner1") ||  ag.equals("owner2")))) {
             result = model.openFridge(ag);
         } 
         
         // Acción de cerrar el frigorifico
         else if (action.equals(closeFridge) 
-            && (ag.equals("rmayordomo")|| ag.equals("owner"))) {
+            && (ag.equals("rmayordomo")|| (ag.equals("owner1") ||  ag.equals("owner2")))) {
             result = model.closeFridge(ag);
 
         }
 
         // Acción de coger una cerveza
         else if (action.equals(getBeerAndPinchito) 
-            && (ag.equals("rmayordomo") || ag.equals("owner"))) {
+            && (ag.equals("rmayordomo") || (ag.equals("owner1") ||  ag.equals("owner2")))) {
                 result = model.getBeerAndPinchito(ag);
         }
         
         // Acción de entregar una cerveza
         else if (action.equals(handInBeer)
-            && (ag.equals("rmayordomo") || ag.equals("owner"))) {
+            && (ag.equals("rmayordomo") || (ag.equals("owner1") ||  ag.equals("owner2")))) {
             result = model.handInBeer(ag);
         } 
         
         // Acción de sorber la cerveza
-        else if (action.equals(sipBeer) && ag.equals("owner")) {
-            result = model.sipBeer();
+        else if (action.equals(sipBeer) && (ag.equals("owner1") ||  ag.equals("owner2")) ) {
+            result = model.sipBeer(ag);
         }
 
         // Acción de tirar basura en el entorno
-        else if(action.equals(generateTrash) && ag.equals("owner")){
+        else if(action.equals(generateTrash) && (ag.equals("owner1") ||  ag.equals("owner2"))){
             result = model.generateTrash();
         }
 		
 		// Acción de generar platos sucios
-        else if(action.equals(generatePlato) && ag.equals("owner")){
+        else if(action.equals(generatePlato) && (ag.equals("owner1") ||  ag.equals("owner2"))){
             result = model.generatePlato();
         }
         
         // Acción de recoger basura del entorno
         else if(action.equals(pickTrash) 
-            && (ag.equals("rlimpiador") || ag.equals("owner"))){
+            && (ag.equals("rlimpiador") || (ag.equals("owner1") ||  ag.equals("owner2")))){
 			result = model.pickTrash();	
 		}
 		
@@ -359,7 +381,7 @@ public class HouseEnv extends Environment {
         else if
         (
             (action.equals(desecharRLimpiadorTrash) && ag.equals("rlimpiador")) || 
-            (action.equals(desecharOwnerTrash) && ag.equals("owner"))
+            (action.equals(desecharOwnerTrash1) && ag.equals("owner1") || action.equals(desecharOwnerTrash2) && ag.equals("owner2"))
         ){
             result = model.desechar();	
         }

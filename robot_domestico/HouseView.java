@@ -136,24 +136,36 @@ public class HouseView extends GridWorldView {
                 g.setColor(Color.black);
                 super.drawString(g, x, y, defaultFont, "Ped");
                 break;
-
-            // Dibujado del agente rlavador
-            case 5: 
-				c = Color.white;
-                super.drawAgent(g, x, y, c, -1);
-                g.setColor(Color.black);
-                super.drawString(g, x, y, defaultFont, "Lavad");
-                break;
-			// Dibujado del agente owner
+           
+			// Dibujado del agente owner1
             case 4: 
                 super.drawAgent(g, x, y, Color.BLUE, -1);
-                String o = "Owner";
-                if (hmodel.sipCount > 0) {
-                    o +=  " ("+hmodel.sipCount+")";
+                String o = "Owner1";
+                if (hmodel.sipCount1 > 0) {
+                    o +=  " ("+hmodel.sipCount1+")";
                 }
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, o);
                 break;
+
+            // Dibujado del agente owner2
+            case 5: 
+                super.drawAgent(g, x, y, Color.BLUE, -1);
+                String o2 = "Owner2";
+                if (hmodel.sipCount2 > 0) {
+                    o2 +=  " ("+hmodel.sipCount2+")";
+                }
+                g.setColor(Color.black);
+                drawString(g, x, y, defaultFont, o2);
+                break;
+
+             // Dibujado del agente rlavador
+             case 6: 
+             c = Color.white;
+             super.drawAgent(g, x, y, c, -1);
+             g.setColor(Color.black);
+             super.drawString(g, x, y, defaultFont, "Lavad");
+             break;
         }
     }
 

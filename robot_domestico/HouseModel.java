@@ -28,8 +28,9 @@ public class HouseModel extends GridWorldModel {
             "rlimpiador", 1,
             "rbasurero", 2,
             "rpedidos", 3,
-            "owner",4,
-			"rlavador",5
+            "owner1",4,
+            "owner2",5,
+			"rlavador",6
         );
 
     // Variables de frigorifico abierto o cerrado
@@ -38,10 +39,13 @@ public class HouseModel extends GridWorldModel {
 
     // Variables de posesión de una cerveza
     boolean carryingBeerMayordomo = false;
-    boolean carryingBeerOwner = false;
+    boolean carryingBeerOwner1 = false;
+    boolean carryingBeerOwner2 = false;
 
     // Número de sorbos que ha hecho el owner
-    int sipCount = 0;
+    int sipCount1 = 0;
+    int sipCount2 = 0;
+    
 
     // Cervezas disponibles
     int availableBeers  = 3;
@@ -88,7 +92,8 @@ public class HouseModel extends GridWorldModel {
 	Location lRLavador = new Location(0, GSize/2-2);
     Location lRBasurero = new Location(GSize-1, GSize/2-2);
     Location lRPedidos = new Location(GSize/2-2, GSize-1);
-    Location lOwner = new Location(GSize-1,GSize-1);
+    Location lOwner1 = new Location(GSize-1,GSize-1);
+    Location lOwner2 = new Location(GSize-1,GSize-2);
 
     // ArrayList de posiciones de la basura
     ArrayList<Location> lTrash 
@@ -162,14 +167,15 @@ public class HouseModel extends GridWorldModel {
     public HouseModel() {
         // Creación del grid con el tamaño definido en GSize
         // Número de agentes móviles: 6
-        super(GSize, GSize, 6);
+        super(GSize, GSize, 7);
 
         // Añadido de posiciones iniciales para los agentes (móviles)
         setAgPos(agents.get("rmayordomo"), lRMayordomo);
         setAgPos(agents.get("rlimpiador"), lRLimpiador);
         setAgPos(agents.get("rbasurero"), lRBasurero);
         setAgPos(agents.get("rpedidos"), lRPedidos);
-        setAgPos(agents.get("owner"), lOwner);
+        setAgPos(agents.get("owner1"), lOwner1);
+        setAgPos(agents.get("owner2"), lOwner2);
 		setAgPos(agents.get("rlavador"), lRLavador);
 
         // Añadido de posiciones para los elementos del entorno (no móviles)
@@ -190,7 +196,7 @@ public class HouseModel extends GridWorldModel {
     boolean openFridge(String ag) {
         if (!fridgeOpenMayordomo && ag.equals("rmayordomo")) {
             fridgeOpenMayordomo = true;   
-        } else if(!fridgeOpenOwner && ag.equals("owner")){
+        } else if(!fridgeOpenOwner && (ag.equals("owner1") || ag.equals("owner2") )){
             fridgeOpenOwner = true;
         } else {
             return false;
@@ -203,7 +209,7 @@ public class HouseModel extends GridWorldModel {
     boolean closeFridge(String ag) {
         if (fridgeOpenMayordomo && ag.equals("rmayordomo")) {
             fridgeOpenMayordomo = false;   
-        } else if(fridgeOpenOwner && ag.equals("owner")){
+        } else if(fridgeOpenOwner && (ag.equals("owner1") || ag.equals("owner2") )){
             fridgeOpenOwner = false;
         } else {
             return false;
@@ -228,16 +234,7 @@ public class HouseModel extends GridWorldModel {
         for (int agent: this.agents.values()) {
             setAgPos(agent, getAgPos(agent));
         }
-
-        /*
-        if (view != null) {
-            view.update(lFridge.x,lFridge.y);
-            view.update(lOwner.x,lOwner.y);
-            view.update(lDelivery.x, lDelivery.y);
-            view.update(lBin.x, lBin.y);
-        }
-        */
-        
+     
         return true;
     }
 
@@ -246,10 +243,12 @@ public class HouseModel extends GridWorldModel {
         if (availableBeers > 0) {
             if(fridgeOpenMayordomo && ag.equals("rmayordomo") && !carryingBeerMayordomo){
                 carryingBeerMayordomo = true;
-            } else if(fridgeOpenOwner && ag.equals("owner") && !carryingBeerOwner){
-                carryingBeerOwner = true;
+            } else if(fridgeOpenOwner && (ag.equals("owner1") ) && !carryingBeerOwner1){
+                carryingBeerOwner1 = true;
+            }else if(fridgeOpenOwner && (ag.equals("owner2") ) && !carryingBeerOwner2){
+                carryingBeerOwner2 = true;
             }
-            
+
 			pinchito--;
             availableBeers--;
             
@@ -283,16 +282,23 @@ public class HouseModel extends GridWorldModel {
     boolean handInBeer(String ag) {
         if(ag.equals("rmayordomo") && carryingBeerMayordomo){
             carryingBeerMayordomo = false;
-        } else if(ag.equals("owner") && carryingBeerOwner){
-            carryingBeerOwner = false;
+        } else if(ag.equals("owner1") && carryingBeerOwner1){
+            carryingBeerOwner1 = false;
+            
+        } else if(ag.equals("owner2") && carryingBeerOwner2){
+            carryingBeerOwner2 = false;
+            
         } else{
             return false;
         }
-            
-        sipCount = 10;
-            
+        sipCount1 = 10;
+        sipCount2 = 10;
         if(view != null){
-            Location lAgent = getAgPos(this.agents.get("owner"));
+            Location lAgent = getAgPos(this.agents.get("owner1"));
+            view.update(lAgent.x,lAgent.y);
+        }
+        if(view != null){
+            Location lAgent = getAgPos(this.agents.get("owner2"));
             view.update(lAgent.x,lAgent.y);
         }
             
@@ -300,19 +306,33 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Sorver cerveza
-    boolean sipBeer() {
-        if (sipCount > 0) {
-            sipCount--;
-            if(view != null){
-                Location lAgent = getAgPos(this.agents.get("owner"));
-                view.update(lAgent.x,lAgent.y);
+    boolean sipBeer(String ag) {
+        if(ag.equals("owner1")){
+            if (sipCount1 > 0) {
+                sipCount1--;
+                if(view != null){
+                    Location lAgent = getAgPos(this.agents.get("owner1"));
+                    view.update(lAgent.x,lAgent.y);
+                }
+                return true;
+            } else {
+                return false;
             }
-            return true;
-        } else {
-            return false;
         }
+        if(ag.equals("owner2")){
+            if (sipCount2 > 0) {
+                sipCount2--;
+                if(view != null){
+                    Location lAgent = getAgPos(this.agents.get("owner2"));
+                    view.update(lAgent.x,lAgent.y);
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;     
     }
-
     // desechar la basura
     boolean desechar(){
         cansInTrash++;

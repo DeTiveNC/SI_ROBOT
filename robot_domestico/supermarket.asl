@@ -6,13 +6,17 @@
 last_order_id(1). // initial belief
 moneySuper(1000).
 
-stock(beer, 11, estrella).
-stock(beer, 11, aguila).
-stock(beer, 11, volldamm).
-stock(beer, 11, redvintage).
-stock(beer, 11, heineken).
+/*Initial goal*/
+!recibir_stockyprecio.
+
 
 /* Plan */
++!recibir_stockyprecio : true 
+	<-
+		.send(abastecedor, tell, dar_precioystock);
+		.wait(100).
+
+
 +!actualiza_order_id(OrderId)
 	<- ?last_order_id(A);
 		OrderId = A + 1;

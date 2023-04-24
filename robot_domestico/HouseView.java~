@@ -79,7 +79,7 @@ public class HouseView extends GridWorldView {
             case HouseModel.LACENA:
 				String d = "Lace";
 				Color r = Color.orange;
-                if (hmodel.platosLimpios > 0) {
+                if (hmodel.platosLimpios == 0) {
                     d +=  " ("+hmodel.platosEnLacena+")";
                 }
                 super.drawAgent(g, x, y, r, -1);

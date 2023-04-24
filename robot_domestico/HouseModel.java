@@ -289,7 +289,7 @@ public class HouseModel extends GridWorldModel {
         
         String move = getNextMove(dest, lAgent);
 		
-		if(move == "u" && moveNext == "u") {
+		if(move == "u" || moveNext == "u") {
 			lAgent.y--;
 			int letramovelim = move.indexOf("u");
 			moveNext = move.substring(0, letramovelim) + move.substring(letramovelim + 1);

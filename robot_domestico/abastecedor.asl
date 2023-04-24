@@ -41,9 +41,6 @@ price(beer, 12, redvintage).
 		.send(supermarket2, tell, price(beer, 12, redvintage)).
 
 
-
-
-
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);
       -msg(M).

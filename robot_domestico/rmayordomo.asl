@@ -1,12 +1,14 @@
 /* Initial beliefs and rules */
 
-/**/
+/*TODO: hacer que el mayordomo envie precio a owner y owner pague la cerveza pista: usar consulta_precio
+		hacer que funcione lo de ir a los supermercados		
+*/
 available(beer,fridge).
 
 // Limite de cerveza que puede beber el owner
-limit(beer,5).
-precioCerveza(50).              
-	
+limit(beer,5).   
+
+money(0).
 
 // Basura que posee el robot
 trash(can, 0). // Ya no es necesario
@@ -25,11 +27,6 @@ too_much(B) :-
 
 !bring(owner1, beer).
 !pide_lista_productos_super.
-
-
-+money(C)[source(Agt)]
-	<-   -+money(C);
-		.send(Agt, achieve, restarDinero(C)).
 
 /* Planes */
 
@@ -89,6 +86,12 @@ too_much(B) :-
 	return: a partir de la lista obtenida en supermercado, devuelve el precio y la marca de la cerveza elegida
 */   
 
++!envia_precio(Agt, P, OrderId, Supermarket)
+	<- //!consulta_precio(Agt,M,C);
+		//L = P *2;
+		.print(Agt, P, OrderId, Supermarket, "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+		.send(Agt, tell, pagar_cerveza(P, OrderId, Supermarket)).
+
 +!consulta_precio(Agt, M, C): seleccion_productos(L)[source(Agt)] & .member(q(M, C), L)
 	<-  .print("precio de ", M, " en " , Agt, " es ", C).
 		
@@ -103,20 +106,27 @@ too_much(B) :-
 	TODO: generalizar de los consulta precios a los diferentes supermercados
 		  descartar los 100 en la lista (filtrar)
 */
-	
-+!comprar(supermarket, beer, M) : not ordered(beer)
+
++order_aceptado(Owner, OrderId, P)[source(Agt)]
+	<- !envia_precio(Owner, P, OrderId, Agt);
+		.print(Owner, P, OrderId, Agt, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").
+
++!comprar(Agt, beer, M) : not ordered(beer)
    <- 	  
 	  !consulta_precio(supermarket1, M, PS1);
 	  !consulta_precio(supermarket2, M, PS2);
 	  L = [q(PS2, supermarket2), q(PS1, supermarket1)];
 	  .min(L, X);
-	  !despieza(X, Precio, Agt);
+	  !despieza(X, Precio, Supermarket);
       ?nbeersPerTime(NBeer);
-	  .print("Comprando ", M, " en ", Agt);
-	  .send(Agt, achieve, order(beer, NBeer, M));
-	  +ordered(beer).	  
+	  .print("Comprando ", M, " en ", Supermarket);
+	  .send(Supermarket, achieve, order(Agt, beer, NBeer, M));
+	  +ordered(beer).
 	  
-+!comprar(supermarket, beer, M).
+	  
+	  
+	  
++!comprar(Agt, beer, M).
 
 +!escoge_owner(owner1, P)
 	<- !bring(owner2, P).
@@ -142,11 +152,11 @@ too_much(B) :-
 	  !escoge_owner(Agt, beer).
 
 +!bring(Agt,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) 
-   <- .println("El robot mayordomo va a buscar una cerveza");
+   <- .println("El robot mayordomo va a buscar una cerveza");  	  
       !go_at(rmayordomo,fridge);
       open(fridge);
       get(beer, pinchito);
-	  !comprar(supermarket, beer, M);
+	  !comprar(Agt, beer, M);
       close(fridge);
       !go_at(rmayordomo,couch);
 	  .wait(1000);
@@ -171,6 +181,13 @@ too_much(B) :-
 	  !escoge_owner(Agt, beer).     
 
 +!limpiezaTerminada <- -entornoLimpio.
+
++pago_cerveza(C, OrderId, Supermarket)[source(Agt)]
+	<-  ?money(M);
+		L = M + C;
+		-money(M);
+		+money(L);
+		.send(Supermarket, tell, pago_order(OrderId, C)).
 
 // when the supermarket makes a delivery, try the 'has' goal again
 +delivered(beer,Qtd,OrderId, N)[source(S)]

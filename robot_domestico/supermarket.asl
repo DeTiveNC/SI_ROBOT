@@ -44,17 +44,25 @@ stock(beer, 11, heineken).
 /*order/3 -> tipo, cantidad, marca
 public: cualquiera(rmayordomo)
 return: */
-
-+!order(T,C, M)[source(Ag)] : stock(T, P, M2) & P >= C & M = M2 // comprueba la cantidad de stock
++pago_order(OrderId, P)[source(Agt)]: pending_order(OrderId, P, T, M)
+	<- !actualizar_moneySuper(M, P, T);
+		deliver(T, P);
+		.send(Agt, tell, delivered(T,P,OrderId, M));
+		-pending_order(OrderId, P, T, M).
+		
++!order(Owner, T, C, M)[source(Ag)] : stock(T, P, M2) & P >= C & M = M2 // comprueba la cantidad de stock
   <- 
   	 !actualiza_order_id(OrderId); //1: se actualiza el order_id
-	 !actualiza_moneySuper(M, C, T); //2: actualiza moneySuper 
-     !decrementa_stock(T, C, M);//3: actualiza stock
-	 deliver(T,C); //4: invoca deliver
-	 .send(rmayordomo, tell, price(beer, Cant, M));//5: Actualiza a rmayordomo y al Agt que lo invocó
-     .send(Ag, tell, delivered(T,C,OrderId, M)).
+	 //!actualiza_moneySuper(M, C, T); //2: actualiza moneySuper 
+     !decrementa_stock(T, C, M);//2: actualiza stock
+	 +pending_order(OrderId, P, T, M);
+	 ?price(T, Precio, M);
+	 G = Precio * C;
+	 //deliver(T,C); //4: invoca deliver
+	 .send(Ag, tell, order_aceptado(Owner, OrderId, G)).//5: Actualiza a rmayordomo y al Agt que lo invocó
+     //.send(Ag, tell, delivered(T,C,OrderId, M)).
 
-+!order(T, C, M)[source(Ag)] : stock(T, P, M) & P < C
++!order(_, T, C, M)[source(Ag)] : stock(T, P, M) & P < C
   <- .print("Out of stock: ", T);
      .send(Ag, tell, not_enough_stock(T, C, P)).
 	 

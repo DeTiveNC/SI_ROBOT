@@ -22,7 +22,7 @@
 */
 trash(can,0).
 platoVa(plato, 0).
-money(500).
+money(1500).
 .my_name(N).
 /* Objetivos iniciales */
 
@@ -94,7 +94,7 @@ money(500).
 		
 +!restarDinero(C) : money(M) & M < C	  
   <- .print("Cantidad de dinero insuficiente.");
-  	 false.
+  	 true.
 
 /*
 	lanzar/1 -> Elemento
@@ -197,7 +197,13 @@ money(500).
    <- .println("Owner está esperando una cerveza.");
 	   .wait(500);
 	   !bebe(Agt, beer).
-	     		 
+	
++pagar_cerveza(C, OrderId, Supermarket)[source(Agt)]
+	<-  .print(C, OrderId, Supermarket, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	    !restarDinero(C);//TODO: se asume que restar dinero va a salir bien
+		.send(Agt, tell, pago_cerveza(C, OrderId, Supermarket));		
+		-pagar_cerveza(C, OrderId, Supermarket).
+		
 +stock(beer,0)
    :  available(beer,fridge)
    <- -available(beer,fridge).

@@ -48,7 +48,7 @@ public class HouseEnv extends Environment {
 	// Acciones de eliminar los platos del lavavajillas
     public static final Literal vaciarLa = Literal.parseLiteral("vaciarLa(lavavajillas)");
 	// Acciones para poner platos en la lacena
-	 public static final Literal ponerPla = Literal.parseLiteral("ponerPla(lavavajillas)");
+	 public static final Literal ponerPla = Literal.parseLiteral("ponerPla(rlavador, lacena)");
 
     // Percepciones de tener cerveza
     public static final Literal hasOwnerBeer = Literal.parseLiteral("has(owner,beer)");

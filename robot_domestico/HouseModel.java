@@ -146,7 +146,9 @@ public class HouseModel extends GridWorldModel {
         = new ArrayList<>(Arrays.asList(
             new Location(lLavavajillas.x, lLavavajillas.y+1),
             new Location(lLavavajillas.x, lLavavajillas.y-1),
-            new Location(lLavavajillas.x+1, lLavavajillas.y)
+            new Location(lLavavajillas.x+1, lLavavajillas.y),
+			new Location(lLavavajillas.x+1, lLavavajillas.y-1),
+			new Location(lLavavajillas.x+1, lLavavajillas.y+1)
         ));
 		
 	// Posiciones permitidas de la lacena
@@ -154,7 +156,9 @@ public class HouseModel extends GridWorldModel {
         = new ArrayList<>(Arrays.asList(
             new Location(lLacena.x-1, lLacena.y),
             new Location(lLacena.x, lLacena.y+1),
-            new Location(lLacena.x+1, lLacena.y)
+            new Location(lLacena.x+1, lLacena.y),
+			new Location(lLacena.x-1, lLacena.y+1),
+			new Location(lLacena.x+1, lLacena.y+1)
         ));
 		
 	// Clase par para almacenar posiciones para la funcion del move_towards
@@ -178,7 +182,7 @@ public class HouseModel extends GridWorldModel {
 		
 		ArrayList<Integer> explored = new ArrayList<Integer>();
 		
-		int i = ~0 - 256;
+		int i = ~0;
 		
 		uncheckedMoves.add(new Pair<Location, String>(or, ""));
 		explored.add(or.x + or.y * GSize);
@@ -187,6 +191,7 @@ public class HouseModel extends GridWorldModel {
 			Location l = uncheckedMoves.get(0).getL();
 			String moves = uncheckedMoves.get(0).getR();
 			uncheckedMoves.remove(0);
+			
 			
 			if(l.isNeigbour(dest)) return moves;
 			
@@ -287,32 +292,29 @@ public class HouseModel extends GridWorldModel {
         Location lAgent = getAgPos(nAg);
         
         String move = getNextMove(dest, lAgent);
+		System.out.println(move);
 		
 		
-		if(move.charAt(0) == 'u' && !move.isEmpty()) {
+		if(!move.isEmpty() && move.charAt(0) == 'u') {
 			lAgent.y--;
 			move = move.substring(1);
-		} else if(move.charAt(0) == 'l' && !move.isEmpty()) {
+		} else if(  !move.isEmpty() && move.charAt(0) == 'l') {
 			lAgent.x--;
 			move = move.substring(1);
-		} else if(move.charAt(0) == 'b'  && !move.isEmpty()){
+		} else if( !move.isEmpty()  && move.charAt(0) == 'b' ){
 			lAgent.y++;
 			move = move.substring(1);
-		} else if (move.charAt(0) == 'r' && !move.isEmpty()) {
+		} else if ( !move.isEmpty() && move.charAt(0) == 'r' ) {
 			lAgent.x++;
 			move = move.substring(1);
-		} else if(move.charAt(0) == 'n' && !move.isEmpty()){
+		} else if(!move.isEmpty() && move.charAt(0) == 'n' ){
 		    move = getNextMove(dest, lAgent);
 			move = move.substring(1);
 		}
 
         setAgPos(nAg, lAgent);
 
-        for (int agent: this.agents.values()) {
-            setAgPos(agent, getAgPos(agent));
-        }
-
-        
+		
         
         return true;
     }
@@ -477,7 +479,7 @@ public class HouseModel extends GridWorldModel {
 
     // Recoger la basura que se encuentra en el entorno
     boolean pickTrash() {
-        Location r1 = getAgPos(agents.get("rlimpiador"));
+        Location r1 = lTrash.get(0);
 
         if (hasObject(TRASH, r1)) {
             if(lTrash.contains(r1)){

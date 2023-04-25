@@ -86,14 +86,14 @@ public class HouseView extends GridWorldView {
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, d);
                 break;
-            /*
+       
             // Dibujado de los posibles obstaculos del entorno
             case HouseModel.OBSTACULE:
                 super.drawAgent(g, x, y, Color.darkGray, -1);
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, "Obstacule");
                 break;
-            */
+           
         }
         //repaint();
     }

@@ -285,28 +285,25 @@ public class HouseModel extends GridWorldModel {
 
         int nAg = this.agents.get(ag);
         Location lAgent = getAgPos(nAg);
-		String moveNext = "u";
         
         String move = getNextMove(dest, lAgent);
 		
-		if(move == "u" || moveNext == "u") {
+		
+		if(move.charAt(0) == 'u' && !move.isEmpty()) {
 			lAgent.y--;
-			int letramovelim = move.indexOf("u");
-			moveNext = move.substring(0, letramovelim) + move.substring(letramovelim + 1);
-		} else if(move == "l" || moveNext == "l") {
+			move = move.substring(1);
+		} else if(move.charAt(0) == 'l' && !move.isEmpty()) {
 			lAgent.x--;
-			int letramovelim = move.indexOf("l");
-			moveNext = move.substring(0, letramovelim) + move.substring(letramovelim + 1);
-		} else if(move == "b" || moveNext == "b"){
+			move = move.substring(1);
+		} else if(move.charAt(0) == 'b'  && !move.isEmpty()){
 			lAgent.y++;
-			int letramovelim = move.indexOf("b");
-			moveNext = move.substring(0, letramovelim) + move.substring(letramovelim + 1);
-		} else if (move == "r" || moveNext == "r") {
+			move = move.substring(1);
+		} else if (move.charAt(0) == 'r' && !move.isEmpty()) {
 			lAgent.x++;
-			int letramovelim = move.indexOf("r");
-			moveNext = move.substring(0, letramovelim) + move.substring(letramovelim + 1);
-		} else if(move == "n" || moveNext == "n"){
+			move = move.substring(1);
+		} else if(move.charAt(0) == 'n' && !move.isEmpty()){
 		    move = getNextMove(dest, lAgent);
+			move = move.substring(1);
 		}
 
         setAgPos(nAg, lAgent);

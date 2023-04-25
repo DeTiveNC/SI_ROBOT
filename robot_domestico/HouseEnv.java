@@ -127,7 +127,7 @@ public class HouseEnv extends Environment {
         else if (model.lCouchPositions.contains(lRMayordomo)) {
             addPercept("rmayordomo", atRMayordomoCouch);
         }
-        else if(model.lRMayordomo.equals(lRMayordomo)){
+        else if(model.lRMayordomo.isNeigbour(lRMayordomo)){
             addPercept("rmayordomo", atRMayordomoBase);
         }
 
@@ -135,10 +135,10 @@ public class HouseEnv extends Environment {
         if (model.lBinPositions.contains(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBin);
         }
-        else if(!model.lTrash.isEmpty() && model.lTrash.get(0).equals(lRLimpiador)){
+        else if(!model.lTrash.isEmpty() && model.lTrash.get(0).isNeigbour(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorTrash);
         }
-        else if(model.lRLimpiador.equals(lRLimpiador)){
+        else if(model.lRLimpiador.isNeigbour(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBase);
         }
 		else if (model.lCouchPositions.contains(lRLimpiador)) {
@@ -151,14 +151,14 @@ public class HouseEnv extends Environment {
         // Percepciones de posición del agente robot rbasurero
         if (model.lBinPositions.contains(lRBasurero)){
             addPercept("rbasurero", atRBasureroBin);
-        } else if(model.lRBasurero.equals(lRBasurero)){
+        } else if(model.lRBasurero.isNeigbour(lRBasurero)){
             addPercept("rbasurero", atRBasureroBase);
         }
 
 		// Percepciones de posición del agente robot rlavador
         if (model.lLavavajillasPositions.contains(lRLavador)){
             addPercept("rlavador", atRLavadorLava);
-        } else if(model.lRLavador.equals(lRLavador)){
+        } else if(model.lRLavador.isNeigbour(lRLavador)){
             addPercept("rlavador", atRLavadorBase);
         }  else if (model.lLacenaPositions.contains(lRLavador)){
             addPercept("rlavador", atRLavadorLace);
@@ -171,7 +171,7 @@ public class HouseEnv extends Environment {
         else if (model.lFridgePositions.contains(lRPedidos)) {
             addPercept("rpedidos", atRPedidosFridge);
         }
-        else if(model.lRPedidos.equals(lRPedidos)){
+        else if(model.lRPedidos.isNeigbour(lRPedidos)){
             addPercept("rpedidos", atRPedidosBase);
         }
 
@@ -179,7 +179,7 @@ public class HouseEnv extends Environment {
         if (model.lBinPositions.contains(lOwner)){
             addPercept("owner", atOwnerBin);
         }
-        else if(model.lCouch.equals(lOwner)){
+        else if(model.lCouch.isNeigbour(lOwner)){
             addPercept("owner", atOwnerCouch);
         }
         else if(model.lFridgePositions.contains(lOwner)){

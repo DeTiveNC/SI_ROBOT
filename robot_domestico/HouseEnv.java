@@ -239,7 +239,7 @@ public class HouseEnv extends Environment {
 
     @Override
     public boolean executeAction(String ag, Structure action) {
-        System.out.println("["+ag+"] doing: "+action);
+        //System.out.println("["+ag+"] doing: "+action);
         boolean result = false;
 
         // Acciones de movimiento

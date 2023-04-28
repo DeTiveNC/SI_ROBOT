@@ -90,6 +90,7 @@ too_much(B) :-
 	<- //!consulta_precio(Agt,M,C);
 		//L = P *2;
 		.print(Agt, P, OrderId, Supermarket, "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+		.print(P, " ");
 		.send(Agt, tell, pagar_cerveza(P, OrderId, Supermarket)).
 
 +!consulta_precio(Agt, M, C): seleccion_productos(L)[source(Agt)] & .member(q(M, C), L)
@@ -122,10 +123,7 @@ too_much(B) :-
 	  .print("Comprando ", M, " en ", Supermarket);
 	  .send(Supermarket, achieve, order(Agt, beer, NBeer, M));
 	  +ordered(beer).
-	  
-	  
-	  
-	  
+	    	  	  
 +!comprar(Agt, beer, M).
 
 +!escoge_owner(owner1, P)
@@ -141,17 +139,17 @@ too_much(B) :-
       .send(rlimpiador, tell, hay_basura(rlimpiador, trash, plato));
 	  !escoge_owner(Agt, beer).
 
-+!bring(Agt,beer) [source(self)]:  too_much(beer) & limit(beer,L)
++!bring(Agt,beer) [source(self)]:  too_much(beer, Agt) & limit(beer,L)
    <- .concat("The Department of Health does not allow me to give you more than ", L,
               " beers a day! I am very sorry about that!",M);
       .send(Agt,tell,msg(M));
       .send(Agt, tell, ~couldDrink(beer));
       !go_at(rmayordomo, baseRMayordomo);
-      .println("El Robot mayordomo descansa porque Owner ha bebido mucho hoy.");
+      .println("El Robot mayordomo descansa porque ", Agt,  " ha bebido mucho hoy.");
       .wait(10000);
 	  !escoge_owner(Agt, beer).
 
-+!bring(Agt,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) 
++!bring(Agt,beer)[source(self)]:  available(beer,fridge) & not too_much(beer, Agt) & asked(beer) & cerveza_escogida(M) 
    <- .println("El robot mayordomo va a buscar una cerveza");  	  
       !go_at(rmayordomo,fridge);
       open(fridge);
@@ -190,12 +188,12 @@ too_much(B) :-
 		.send(Supermarket, tell, pago_order(OrderId, C)).
 
 // when the supermarket makes a delivery, try the 'has' goal again
-+delivered(beer,Qtd,OrderId, N)[source(S)]
-  <-  ?money(M)[source(self)];
-      ?price(beer, P, N);
-      -+money(M-P*Qtd);
-      .send(rpedidos, tell, money(P*Qtd));
-      .send(rpedidos, tell, delivered(beer, Qtd, OrderId, S, N)).
++delivered(beer, Precio, OrderId, Marca, Cantidad)[source(S)]
+  <-  ?money(Money)[source(self)];
+	  .print(N);
+      -+money(Money-Precio); //.send(Agt, tell, delivered(T,P,OrderId, M));
+      .send(rpedidos, tell, money(Precio));
+      .send(rpedidos, tell, delivered(beer, Cantidad , OrderId, S, Marca)).
   
 +available(beer, fridge)[source(rpedidos)]
    <- -ordered(beer).

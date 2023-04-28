@@ -74,8 +74,8 @@ money(1500).
 
 +!get(beer) : not asked(beer)
    <- .send(rmayordomo, tell, asked(beer));//1: Preguntarle a mayordomo por una cerveza
-      Y = 50; //2: actualizar dinero a 50 TODO: mejorar esto
-   	  .send(rmayordomo, tell, money(Y)); 	   //3: enviarle el dinero a mayordomo	
+      //Y = 50; //2: actualizar dinero a 50 TODO: mejorar esto
+   	  //.send(rmayordomo, tell, money(Y)); 	   //3: enviarle el dinero a mayordomo	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer);	//4: actualizar belief de que ya se ha pedido una cerveza
 	  .wait(200).
@@ -201,7 +201,7 @@ money(1500).
 +pagar_cerveza(C, OrderId, Supermarket)[source(Agt)]
 	<-  .print(C, OrderId, Supermarket, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 	    !restarDinero(C);//TODO: se asume que restar dinero va a salir bien
-		.send(Agt, tell, pago_cerveza(C, OrderId, Supermarket));		
+		.send(Agt, tell, pago_cerveza(C, OrderId, Supermarket));	
 		-pagar_cerveza(C, OrderId, Supermarket).
 		
 +stock(beer,0)

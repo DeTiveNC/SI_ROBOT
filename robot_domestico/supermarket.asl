@@ -18,12 +18,12 @@ stock(beer, 11, heineken).
 		OrderId = A + 1;
 		-+last_order_id(OrderId).
 		
-+!actualiza_moneySuper(M, C, T)
-	<- ?price(T, P, M);
-		?moneySuper(A);
-		-moneySuper(A);
-		X = C * P;
-		+moneySuper(A + X).
++!actualizar_moneySuper(P):  moneySuper(A)
+	<-  -moneySuper(A);
+		.print("AAAAAAAAAAAAJJJJJJJJJJJJJJJJJJJJJJJJJJJJOFOSFJSFOSJFS");
+		+moneySuper(A + P).
++!actualizar_moneySuper(P)
+	<-  .print("No se puede actualizar dinero").		
 		
 +!decrementa_stock(T, C, M)
 	<- -stock(T, _, M);
@@ -44,20 +44,27 @@ stock(beer, 11, heineken).
 /*order/3 -> tipo, cantidad, marca
 public: cualquiera(rmayordomo)
 return: */
-+pago_order(OrderId, P)[source(Agt)]: pending_order(OrderId, P, T, M)
-	<- !actualizar_moneySuper(M, P, T);
++pago_order(OrderId, P)[source(Agt)]: pending_order(OrderId, P, T, M, C)
+	<- !actualizar_moneySuper(P);
 		deliver(T, P);
-		.send(Agt, tell, delivered(T,P,OrderId, M));
-		-pending_order(OrderId, P, T, M).
-		
+		.print("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+		.send(Agt, tell, delivered(T,P,OrderId, M, C));
+		-pending_order(OrderId, P, T, M, C).
+
++pago_order(OrderId, P)[source(Agt)]
+	<- .print("No esta bienfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+		?pending_order(Order, Pp, T, M);
+		.print(OrderId," ", Order," ", P," ", Pp).
+	
+
 +!order(Owner, T, C, M)[source(Ag)] : stock(T, P, M2) & P >= C & M = M2 // comprueba la cantidad de stock
-  <- 
+  <- .print("RRRRRRRRRRRTTTTTTTTTTTTT");
   	 !actualiza_order_id(OrderId); //1: se actualiza el order_id
 	 //!actualiza_moneySuper(M, C, T); //2: actualiza moneySuper 
      !decrementa_stock(T, C, M);//2: actualiza stock
-	 +pending_order(OrderId, P, T, M);
 	 ?price(T, Precio, M);
 	 G = Precio * C;
+	 +pending_order(OrderId, G, T, M, C);
 	 //deliver(T,C); //4: invoca deliver
 	 .send(Ag, tell, order_aceptado(Owner, OrderId, G)).//5: Actualiza a rmayordomo y al Agt que lo invocó
      //.send(Ag, tell, delivered(T,C,OrderId, M)).

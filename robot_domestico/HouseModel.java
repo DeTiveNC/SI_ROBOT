@@ -248,14 +248,16 @@ public class HouseModel extends GridWorldModel {
             }else if(fridgeOpenOwner && (ag.equals("owner2") ) && !carryingBeerOwner2){
                 carryingBeerOwner2 = true;
             }
-
+            
 			pinchito--;
             availableBeers--;
             
             if (view != null) view.update(lFridge.x,lFridge.y);
             return true;
         } else {
+            System.out.println("Error:  getBeerAndPinchito retorna false");
             return false;
+            
         }
     }
 

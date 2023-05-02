@@ -11,8 +11,9 @@ MAS domestic_robot {
             rbasurero;
             rpedidos;
 			rlavador;
+            owner1 owner.asl;
+            owner2 owner.asl;
 			abastecedor;
-            owner;
             supermarket1 supermarket.asl;
             supermarket2 supermarket.asl;
 

@@ -23,7 +23,6 @@ public class HouseView extends GridWorldView {
     public void draw(Graphics g, int x, int y, int object) {
         super.drawAgent(g, x, y, Color.lightGray, -1);
 		cont++;
-
         // Dibujado de los elementos que no son agentes
         switch (object) {
         
@@ -31,7 +30,7 @@ public class HouseView extends GridWorldView {
             case HouseModel.FRIDGE:
                 super.drawAgent(g, x, y, Color.WHITE, -1);
                 g.setColor(Color.black);
-                drawString(g, x, y, defaultFont, "F=(B:"+hmodel.availableBeers+"P:"+hmodel.pinchito+")");
+                drawString(g, x, y, defaultFont, "Frid= (B"+hmodel.availableBeers+",P:"+hmodel.pinchito+")");
                 break;
 
             // Dibujado del sillón del owner
@@ -45,16 +44,16 @@ public class HouseView extends GridWorldView {
             case HouseModel.DELIVERY:
                 super.drawAgent(g, x, y, Color.GRAY, -1);
                 g.setColor(Color.black);
-                drawString(g, x, y, defaultFont, "Delivery("+hmodel.deliveryBeers+")");
+                drawString(g, x, y, defaultFont, "Delivery");
                 break;
             
             // Dibujado del cubo de basura
             case HouseModel.BIN:
                 String b = "Bin";
                 if (hmodel.cansInTrash > 0) {
-                    b +=  " ("+hmodel.cansInTrash+"/10)";
+                    b +=  " ("+hmodel.cansInTrash+")";
                 }
-				if(hmodel.burnerOn == false){
+                if(hmodel.burnerOn == false){
                 super.drawAgent(g, x, y, Color.RED, -1);
 				} else if(hmodel.burnerOn == true) {
 				super.drawAgent(g,x,y,Color.GREEN, -1);	
@@ -71,10 +70,10 @@ public class HouseView extends GridWorldView {
                 break;
 			// Dibujo para el lavavajillas
 			case HouseModel.LAVAVAJILLAS:
-				String a = "Lav";
+				String a = "Lava";
 				Color c = Color.yellow;
                 if (hmodel.platosLimpiar > 0) {
-                    a +=  " ("+hmodel.platosLimpiar+"/10)";
+                    a +=  " ("+hmodel.platosLimpiar+"/20)";
                 }
                 super.drawAgent(g, x, y, c, -1);
                 g.setColor(Color.black);
@@ -83,25 +82,25 @@ public class HouseView extends GridWorldView {
 				
 			// Dibujo para la lacena
             case HouseModel.LACENA:
-				String d = "Lac";
+				String d = "Lace";
 				Color r = Color.orange;
                 if (hmodel.platosLimpios == 0) {
-                    d +=  " ("+hmodel.platosEnLacena+"/10)";
+                    d +=  " ("+hmodel.platosEnLacena+"/20)";
                 }
                 super.drawAgent(g, x, y, r, -1);
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, d);
                 break;
-       
+            
             // Dibujado de los posibles obstaculos del entorno
             case HouseModel.OBSTACULE:
                 super.drawAgent(g, x, y, Color.darkGray, -1);
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, "Obstacule");
                 break;
-           
+            
         }
-		if(cont > 50){
+        if(cont > 50){
         repaint();
 		cont = 0;
 		}
@@ -145,24 +144,36 @@ public class HouseView extends GridWorldView {
                 g.setColor(Color.black);
                 super.drawString(g, x, y, defaultFont, "Ped");
                 break;
-
-            // Dibujado del agente rlavador
-            case 5: 
-				c = Color.white;
-                super.drawAgent(g, x, y, c, -1);
-                g.setColor(Color.black);
-                super.drawString(g, x, y, defaultFont, "Lavad");
-                break;
-			// Dibujado del agente owner
+           
+			// Dibujado del agente owner1
             case 4: 
                 super.drawAgent(g, x, y, Color.BLUE, -1);
-                String o = "Owner";
-                if (hmodel.sipCount > 0) {
-                    o +=  " ("+hmodel.sipCount+")";
+                String o = "Owner1";
+                if (hmodel.sipCount1 > 0) {
+                    o +=  " ("+hmodel.sipCount1+")";
                 }
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, o);
                 break;
+
+            // Dibujado del agente owner2
+            case 5: 
+                super.drawAgent(g, x, y, Color.BLUE, -1);
+                String o2 = "Owner2";
+                if (hmodel.sipCount2 > 0) {
+                    o2 +=  " ("+hmodel.sipCount2+")";
+                }
+                g.setColor(Color.black);
+                drawString(g, x, y, defaultFont, o2);
+                break;
+
+             // Dibujado del agente rlavador
+             case 6: 
+             c = Color.white;
+             super.drawAgent(g, x, y, c, -1);
+             g.setColor(Color.black);
+             super.drawString(g, x, y, defaultFont, "Lavad");
+             break;
         }
     }
 

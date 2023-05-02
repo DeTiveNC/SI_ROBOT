@@ -27,7 +27,8 @@ price(beer, 12, redvintage).
 		.send(supermarket1, tell, price(beer, 6, estrella));
 		.send(supermarket1, tell, price(beer, 3, volldamm));
 		.send(supermarket1, tell, price(beer, 7, heineken));
-		.send(supermarket1, tell, price(beer, 10, redvintage)).
+		.send(supermarket1, tell, price(beer, 10, redvintage));
+		.send(supermarket1, achieve, actualizar_moneySuperNeg(50*8+50*6+50*3+50*7+50*10)).
 +dar_precioystock[source(supermarket2)] : true
 	<-	.send(supermarket2, tell, stock(beer, 50, estrella));
 		.send(supermarket2, tell, stock(beer, 50, aguila));
@@ -38,7 +39,8 @@ price(beer, 12, redvintage).
 		.send(supermarket2, tell, price(beer, 4, estrella));
 		.send(supermarket2, tell, price(beer, 5, volldamm));
 		.send(supermarket2, tell, price(beer, 5, heineken));
-		.send(supermarket2, tell, price(beer, 12, redvintage)).
+		.send(supermarket2, tell, price(beer, 12, redvintage));
+		.send(supermarket2, achieve, actualizar_moneySuperNeg(50*9+50*4+50*5+50*5+50*12)).
 
 
 +msg(M)[source(Ag)] : true

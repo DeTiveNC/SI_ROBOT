@@ -31,7 +31,7 @@ public class HouseView extends GridWorldView {
             case HouseModel.FRIDGE:
                 super.drawAgent(g, x, y, Color.WHITE, -1);
                 g.setColor(Color.black);
-                drawString(g, x, y, defaultFont, "Fridge ("+hmodel.availableBeers+")");
+                drawString(g, x, y, defaultFont, "F=(B:"+hmodel.availableBeers+"P:"+hmodel.pinchito+")");
                 break;
 
             // Dibujado del sillón del owner
@@ -52,9 +52,13 @@ public class HouseView extends GridWorldView {
             case HouseModel.BIN:
                 String b = "Bin";
                 if (hmodel.cansInTrash > 0) {
-                    b +=  " ("+hmodel.cansInTrash+")";
+                    b +=  " ("+hmodel.cansInTrash+"/10)";
                 }
-                super.drawAgent(g, x, y, Color.GREEN, -1);
+				if(hmodel.burnerOn == false){
+                super.drawAgent(g, x, y, Color.RED, -1);
+				} else if(hmodel.burnerOn == true) {
+				super.drawAgent(g,x,y,Color.GREEN, -1);	
+				}
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, b);
                 break;
@@ -67,10 +71,10 @@ public class HouseView extends GridWorldView {
                 break;
 			// Dibujo para el lavavajillas
 			case HouseModel.LAVAVAJILLAS:
-				String a = "Lava";
+				String a = "Lav";
 				Color c = Color.yellow;
                 if (hmodel.platosLimpiar > 0) {
-                    a +=  " ("+hmodel.platosLimpiar+")";
+                    a +=  " ("+hmodel.platosLimpiar+"/10)";
                 }
                 super.drawAgent(g, x, y, c, -1);
                 g.setColor(Color.black);
@@ -79,10 +83,10 @@ public class HouseView extends GridWorldView {
 				
 			// Dibujo para la lacena
             case HouseModel.LACENA:
-				String d = "Lace";
+				String d = "Lac";
 				Color r = Color.orange;
                 if (hmodel.platosLimpios == 0) {
-                    d +=  " ("+hmodel.platosEnLacena+")";
+                    d +=  " ("+hmodel.platosEnLacena+"/10)";
                 }
                 super.drawAgent(g, x, y, r, -1);
                 g.setColor(Color.black);

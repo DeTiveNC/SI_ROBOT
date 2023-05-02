@@ -25,6 +25,10 @@ public class HouseEnv extends Environment {
 
     // Acción de vaciar el cubo de basura
     public static final Literal vaciarBin  = Literal.parseLiteral("vaciar(bin)");
+	
+	//Acion Burner
+	public static final Literal burnerOn = Literal.parseLiteral("burnerOn");
+	public static final Literal burnerOff = Literal.parseLiteral("burnerOff");
 
     // Acción de tirar una lata en el entorno
     public static final Literal generateTrash = Literal.parseLiteral("generateTrash(can)");
@@ -368,6 +372,15 @@ public class HouseEnv extends Environment {
 		else if (action.equals(desecharP) && ag.equals("rlimpiador")){
             result = model.desecharP();	
         }
+		
+		//Accion de burner on o off
+		else if(action.equals(burnerOn) && ag.equals("rbasurero")){
+			result = model.cambiarCol_On();	
+		}
+		
+		else if(action.equals(burnerOff) && ag.equals("rbasurero")){
+			result = model.cambiarCol_Off();	
+		}
 
         // Acción de vaciar el cubo de basura
         else if(action.equals(vaciarBin) && ag.equals("rbasurero")){

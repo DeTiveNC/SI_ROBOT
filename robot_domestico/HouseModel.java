@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.random.*;
 
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
@@ -19,7 +20,7 @@ public class HouseModel extends GridWorldModel {
     public static final int OBSTACULE = 2048;
 
     // Tamaño del grid
-    public static final int GSize = 13;
+    public static final int GSize = 11;
 
     // Map relacionando el nombre de los agentes con su id
     Map<String, Integer> agents = 
@@ -42,6 +43,13 @@ public class HouseModel extends GridWorldModel {
 
     // Número de sorbos que ha hecho el owner
     int sipCount = 0;
+<<<<<<< Updated upstream
+=======
+	
+	
+	// Boolean para cambiar de color el bin
+	boolean burnerOn = false;
+>>>>>>> Stashed changes
 
     // Cervezas disponibles
     int availableBeers  = 3;
@@ -95,6 +103,7 @@ public class HouseModel extends GridWorldModel {
         = new ArrayList<>();
 
     
+<<<<<<< Updated upstream
     // ArrayList de posiciones de los obstaculos
     ArrayList<Location> lObstacules 
         = new ArrayList<>(Arrays.asList(
@@ -105,6 +114,8 @@ public class HouseModel extends GridWorldModel {
         )
     );
    
+=======
+>>>>>>> Stashed changes
     
     // Arrays de posiciones permitidas para la colocación de los agentes
 
@@ -161,6 +172,7 @@ public class HouseModel extends GridWorldModel {
 			new Location(lLacena.x+1, lLacena.y+1)
         ));
 		
+<<<<<<< Updated upstream
 	// Clase par para almacenar posiciones para la funcion del move_towards
 	public class Pair<L,R> {
 	private L l;
@@ -200,6 +212,52 @@ public class HouseModel extends GridWorldModel {
 				uncheckedMoves.add(new Pair<Location, String>(new Location(l.x, l.y - 1), moves + 'u'));
 				explored.add(l.x + (l.y - 1) * GSize);
 
+=======
+	ArrayList<Location> lObstacules 
+        = new ArrayList<>();
+		
+
+		
+	// Clase par para almacenar posiciones para la funcion del move_towards
+	public class Pair<L,R> {
+	private L l;
+	private R r;
+	public Pair(L l, R r){
+		this.l = l;
+		this.r = r;
+	}
+	
+	public L getL() { return l; }
+	public R getR() { return r; }
+	public void setL(L l) { this.l = l; }
+	public void setR(R r) { this.r = r; }
+	}
+	
+	// Siguiente movimiento para el agente
+	private String getNextMove(Location dest, Location or){
+		ArrayList<Pair<Location, String>> uncheckedMoves = new ArrayList<Pair<Location, String>>();
+		
+		ArrayList<Integer> explored = new ArrayList<Integer>();
+		
+		int i = ~0;
+		
+		uncheckedMoves.add(new Pair<Location, String>(or, ""));
+		explored.add(or.x + or.y * GSize);
+		
+		do{
+			Location l = uncheckedMoves.get(0).getL();
+			String moves = uncheckedMoves.get(0).getR();
+			uncheckedMoves.remove(0);
+			
+			
+			if(l.isNeigbour(dest)) return moves;
+			
+			// TOP
+			if   (isFree(i, l.x, l.y - 1) && !explored.contains(l.x + (l.y - 1) * GSize)) {
+				uncheckedMoves.add(new Pair<Location, String>(new Location(l.x, l.y - 1), moves + 'u'));
+				explored.add(l.x + (l.y - 1) * GSize);
+
+>>>>>>> Stashed changes
 			}
 			
 			// BOTTOM
@@ -251,11 +309,29 @@ public class HouseModel extends GridWorldModel {
         add(COUCH, lCouch);
 		add(LAVAVAJILLAS, lLavavajillas);
 		add(LACENA, lLacena);
+<<<<<<< Updated upstream
         
         for(int i = 0; i<lObstacules.size();i++){
             add(OBSTACULE, lObstacules.get(i));
         } 
     
+=======
+		int j = ~0;
+		int i = 0;
+		
+		
+		while(i < 8){
+			int x = (int) (Math.random()*(GSize-1));
+			int y = (int) (Math.random()*(GSize-1));
+			if(isFree(j, x, y )){
+				lObstacules.add( new Location(x, y));
+				add(OBSTACULE, lObstacules.get(i));
+				i++;
+			}	
+			
+		}
+        
+>>>>>>> Stashed changes
     }
 
     // Abrir frigorífico
@@ -284,6 +360,22 @@ public class HouseModel extends GridWorldModel {
         return true;
     }
 	
+<<<<<<< Updated upstream
+=======
+	boolean cambiarCol_On(){
+		burnerOn = true;
+		view.update(lBin.x, lBin.y);
+		return true;	
+	}
+	
+	boolean cambiarCol_Off(){
+		burnerOn = false;
+		view.update(lBin.x, lBin.y);
+		return true;	
+	}
+	
+	
+>>>>>>> Stashed changes
 
     // Movimiento de los agentes por el entorno
     boolean moveTowards(String ag, Location dest) {

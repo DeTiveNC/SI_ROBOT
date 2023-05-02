@@ -4,7 +4,9 @@
 +papelera_llena(rbasurero, bin) [source(rlimpiador)]
     <-  !go_at(rbasurero, bin);
         vaciar(bin);
-        !go_at(rbasurero, baseRBasurero).
+		burnerOn;
+        !go_at(rbasurero, baseRBasurero);
+		burnerOff.
 	
 		
 		

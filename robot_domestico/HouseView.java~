@@ -8,19 +8,31 @@ import java.awt.Graphics;
 public class HouseView extends GridWorldView {
 
     HouseModel hmodel;
+<<<<<<< Updated upstream
+=======
+	int cont = 0;
+>>>>>>> Stashed changes
 
     public HouseView(HouseModel model) {
         super(model, "Domestic Robot", 700);
         hmodel = model;
         defaultFont = new Font("Arial", Font.BOLD, 16); // change default font
         setVisible(true);
+<<<<<<< Updated upstream
         //repaint();
+=======
+        repaint();
+>>>>>>> Stashed changes
     }
 
     /** draw application objects */
     @Override
     public void draw(Graphics g, int x, int y, int object) {
         super.drawAgent(g, x, y, Color.lightGray, -1);
+<<<<<<< Updated upstream
+=======
+		cont++;
+>>>>>>> Stashed changes
 
         // Dibujado de los elementos que no son agentes
         switch (object) {
@@ -95,7 +107,14 @@ public class HouseView extends GridWorldView {
                 break;
            
         }
+<<<<<<< Updated upstream
         //repaint();
+=======
+		if(cont > 50){
+        repaint();
+		cont = 0;
+		}
+>>>>>>> Stashed changes
     }
 
     @Override

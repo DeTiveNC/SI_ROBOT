@@ -4,15 +4,25 @@
 //stock/3 -> tipo, cantidad y marca
 //price/3 -> tipo, precio y marca
 last_order_id(1). // initial belief
-moneySuper(1000).
+moneySuper(1000000).
+/*Initial goal*/
+!recibir_stockyprecio.
 
-stock(beer, 11, estrella).
-stock(beer, 11, aguila).
-stock(beer, 11, volldamm).
-stock(beer, 11, redvintage).
-stock(beer, 11, heineken).
 
 /* Plan */
++!recibir_stockyprecio : true 
+	<-
+		.send(abastecedor, tell, dar_precioystock);
+		.wait(100).
+
+/*Actualizacion de dinero*/
++!actualizar_moneySuperNeg(P):  moneySuper(A)
+	<-  -moneySuper(A);
+		.print("AAAAAAAAAAAAJJJJJJJJJJJJJJJJJJJJJJJJJJJJOFOSFJSFOSJFS");
+		+moneySuper(A - P).
++!actualizar_moneySuperNeg(P)
+	<-  .print("No se puede actualizar dinero").	
+
 +!actualiza_order_id(OrderId)
 	<- ?last_order_id(A);
 		OrderId = A + 1;

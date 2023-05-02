@@ -41,10 +41,6 @@ public class HouseEnv extends Environment {
 	// Acciones de tirar los platos sucios al lavavajillas
     public static final Literal desecharP = Literal.parseLiteral("desecharP(rlimpiador,plato)");
 	
-	//Acion Burner
-	public static final Literal burnerOn = Literal.parseLiteral("burnerOn");
-	public static final Literal burnerOff = Literal.parseLiteral("burnerOff");
-	
     // Acciones de tirar la basura el el cubo
     public static final Literal desecharRLimpiadorTrash = Literal.parseLiteral("desechar(rlimpiador,trash)");
     public static final Literal desecharOwnerTrash1 = Literal.parseLiteral("desechar(owner1,trash)");
@@ -138,7 +134,7 @@ public class HouseEnv extends Environment {
         else if (model.lCouchPositions.contains(lRMayordomo)) {
             addPercept("rmayordomo", atRMayordomoCouch);
         }
-        else if(model.lRMayordomo.isNeigbour(lRMayordomo)){
+        else if(model.lRMayordomo.equals(lRMayordomo)){
             addPercept("rmayordomo", atRMayordomoBase);
         }
 
@@ -146,10 +142,10 @@ public class HouseEnv extends Environment {
         if (model.lBinPositions.contains(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBin);
         }
-        else if(!model.lTrash.isEmpty() && model.lTrash.get(0).isNeigbour(lRLimpiador)){
+        else if(!model.lTrash.isEmpty() && model.lTrash.get(0).equals(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorTrash);
         }
-        else if(model.lRLimpiador.isNeigbour(lRLimpiador)){
+        else if(model.lRLimpiador.equals(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBase);
         }
 		else if (model.lCouchPositions.contains(lRLimpiador)) {
@@ -162,14 +158,14 @@ public class HouseEnv extends Environment {
         // Percepciones de posición del agente robot rbasurero
         if (model.lBinPositions.contains(lRBasurero)){
             addPercept("rbasurero", atRBasureroBin);
-        } else if(model.lRBasurero.isNeigbour(lRBasurero)){
+        } else if(model.lRBasurero.equals(lRBasurero)){
             addPercept("rbasurero", atRBasureroBase);
         }
 
 		// Percepciones de posición del agente robot rlavador
         if (model.lLavavajillasPositions.contains(lRLavador)){
             addPercept("rlavador", atRLavadorLava);
-        } else if(model.lRLavador.isNeigbour(lRLavador)){
+        } else if(model.lRLavador.equals(lRLavador)){
             addPercept("rlavador", atRLavadorBase);
         }  else if (model.lLacenaPositions.contains(lRLavador)){
             addPercept("rlavador", atRLavadorLace);
@@ -182,7 +178,7 @@ public class HouseEnv extends Environment {
         else if (model.lFridgePositions.contains(lRPedidos)) {
             addPercept("rpedidos", atRPedidosFridge);
         }
-        else if(model.lRPedidos.isNeigbour(lRPedidos)){
+        else if(model.lRPedidos.equals(lRPedidos)){
             addPercept("rpedidos", atRPedidosBase);
         }
 
@@ -193,10 +189,10 @@ public class HouseEnv extends Environment {
         if (model.lBinPositions.contains(lOwner2)){
             addPercept("owner2", atOwnerBin2);
         }
-        else if(model.lCouch.isNeigbour(lOwner1)){
+        else if(model.lCouch.equals(lOwner1)){
             addPercept("owner1", atOwnerCouch1);
         }
-        else if(model.lCouch.isNeigbour(lOwner2)){
+        else if(model.lCouch.equals(lOwner2)){
             addPercept("owner2", atOwnerCouch2);
         }
         else if(model.lFridgePositions.contains(lOwner1)){
@@ -394,14 +390,6 @@ public class HouseEnv extends Environment {
 		else if (action.equals(desecharP) && ag.equals("rlimpiador")){
             result = model.desecharP();	
         }
-		//Accion de burner on o off
-		else if(action.equals(burnerOn) && ag.equals("rbasurero")){
-			result = model.cambiarCol_On();	
-		}
-		
-		else if(action.equals(burnerOff) && ag.equals("rbasurero")){
-			result = model.cambiarCol_Off();	
-		}
 
         // Acción de vaciar el cubo de basura
         else if(action.equals(vaciarBin) && ag.equals("rbasurero")){

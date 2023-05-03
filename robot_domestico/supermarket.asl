@@ -4,7 +4,7 @@
 //stock/3 -> tipo, cantidad y marca
 //price/3 -> tipo, precio y marca
 last_order_id(1). // initial belief
-moneySuper(1000000).
+//moneySuper(1000000).
 /*Initial goal*/
 !recibir_stockyprecio.
 
@@ -12,6 +12,9 @@ moneySuper(1000000).
 /* Plan */
 +!recibir_stockyprecio : true 
 	<-
+		.random(X);
+		F = X*1000000+1;
+		+moneySuper(F);
 		.send(abastecedor, tell, dar_precioystock);
 		.wait(100).
 

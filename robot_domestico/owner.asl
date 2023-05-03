@@ -22,16 +22,23 @@
 */
 trash(can,0).
 platoVa(plato, 0).
-money(1500).
+//money(1500).
 .my_name(N).
 /* Objetivos iniciales */
 
+!money_aleatorio.
 !bebe(N, beer).
 !pide_lista_productos.
 
 !comprobar_aburrido. // initial goal: verify whether I am getting bored
 
 /* Planes iniciales */
+
+//creacion de money aleatorio
++!money_aleatorio : true 
+	<- .random(X);
+		F = X*10000+1;
+		+money(F).
 
 //despieza/3 -> le pasamos un belief en formato q(X,Y) y devuelve X, Y por separado
 +!despieza([],[],[]).

@@ -4,7 +4,6 @@
 //stock/3 -> tipo, cantidad y marca
 //price/3 -> tipo, precio y marca
 last_order_id(1). // initial belief
-//moneySuper(1000000).
 /*Initial goal*/
 !recibir_stockyprecio.
 
@@ -81,6 +80,7 @@ return: */
 
 +!order(_, T, C, M)[source(Ag)] : stock(T, P, M) & P < C
   <- .print("Out of stock: ", T);
+  	 .send(abastecedor, tell, dar_precioystock);
      .send(Ag, tell, not_enough_stock(T, C, P)).
 	 
 +msg(M)[source(Ag)] : true

@@ -38,8 +38,8 @@ last_order_id(1). // initial belief
 +!actualizar_moneySuper(P)
 	<-  .print("No se puede actualizar dinero").		
 		
-+!decrementa_stock(T, C, M)
-	<- -stock(T, _, M);
++!decrementa_stock(T, C, M, P)
+	<- -stock(T, P, M);
 		+stock(T, P-C, M).
 //lista_productos/1 -> tipo
 // public: rmayordomo
@@ -74,7 +74,7 @@ return: */
   <- .print("RRRRRRRRRRRTTTTTTTTTTTTT");
   	 !actualiza_order_id(OrderId); //1: se actualiza el order_id
 	 //!actualiza_moneySuper(M, C, T); //2: actualiza moneySuper 
-     !decrementa_stock(T, C, M);//2: actualiza stock
+     !decrementa_stock(T, C, M ,P);//3: actualiza stock//2: actualiza stock
 	 ?price(T, Precio, M);
 	 G = Precio * C;
 	 +pending_order(OrderId, G, T, M, C);

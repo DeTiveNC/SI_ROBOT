@@ -115,20 +115,20 @@ platoVa(plato, 0).
 +!lanzar(Elem).	 
 
 +hay_basura(owner, trash) [source(rmayordomo)]
-   <- .print("Entra en hay basura +++++++++++++++++++++++++++++++++++++++++++++++");
-      !recogerBasura(owner, trash);
-	  .print("--------------------------------------------------------recoger basura owner en hay basura -------------------------------");
+   <- !recogerBasura(owner, trash);	  
       !tirarBasura(owner, bin);
-      .println("Owner vuelve a su posiciónpppppppppppppppppppppppppppppppppppppppppppppppppp");
       !go_at(owner, couch);
 	  !hay_papeleraBin(rbasurero, bin);
       .abolish(hay_basura(owner, trash));
 	  .send(rmayordomo, achieve, limpiezaTerminada).
 	  
++!hay_papeleraBin(rbasurero, bin) <-
+	.send(rbasurero, tell, papelera_llena(rbasurero, bin));
+	.wait(1000);
+	.send(rbasurero, untell, papelera_llena(rbasurero, bin)).
+	  
 +!recogerBasura(owner, trash) : trashInEnv(T) & T > 0
-   <- .print("--------------------------------------------------------recoger basura owner -------------------------------", T);
-   !go_at(owner, trash);
-      .println("Owner recoge basurappppppppppppppppppppppppppppppppppppppppppppppppp");
+   <- !go_at(owner, trash);
       pickTrashO(owner,trash);
       ?trash(can, C);
       -+trash(can, C+1);
@@ -136,25 +136,16 @@ platoVa(plato, 0).
 +!recogerBasura(owner, trash).
 
 +!tirarBasura(owner, bin): trash(can, X) & X>0
-   <- .print("--------------------------------------------------------tirar basura owner -------------------------------");
-   !go_at(owner, bin);
-   .print("--------------------------------------------------------hace el goat -------------------------------");
-   		.print("Owner esta tirando la basurappppppppppppppppppppppppppppppppppppppppppp");
+   <- !go_at(owner, bin);
       !desechar(owner, trash).
 +!tirarBasura(owner, bin).
 
 +!desechar(owner, trash) : trash(can, X) & X>0
    <- desechar(owner,trash);
-   		.print("Owner esta desechandopppppppppppppppppppppppppppppppppppppppppppp");
       -+trash(can, X-1);
       !desechar(owner, trash).
 +!desechar(owner,trash)
-   <- .println("Owner ha depositado toda la basura en el cuboppppppppppppppppppppppppppppp").
-   
-+!hay_papeleraBin(rbasurero, bin) <-
-	.send(rbasurero, tell, papelera_llena(rbasurero, bin));
-	.wait(100);
-	.send(rbasurero, untell, papelera_llena(rbasurero, bin)).
+   <- .println("Owner ha depositado toda la basura en el cubo").
 
 /*
 	recogerplatosucio/1 -> Elemento

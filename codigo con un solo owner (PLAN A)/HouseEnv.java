@@ -185,10 +185,7 @@ public class HouseEnv extends Environment {
         else if(!model.lTrash.isEmpty() && model.lTrash.get(0).isNeigbour(lOwner)){
             addPercept("owner", atOwnerTrash);
         }
-        else if(model.lCouch.distance(lOwner) == 0){
-            System.out.println("ENTRA POR AQUI EL LCOUCH-----------");
-            System.out.println(lOwner.toString());
-            System.out.println(model.lCouch.toString());    
+        else if(model.lCouch.isNeigbour(lOwner)){              
             addPercept("owner", atOwnerCouch);
         }
         else if(model.lFridgePositions.contains(lOwner)){

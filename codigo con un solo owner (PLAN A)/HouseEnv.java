@@ -32,12 +32,16 @@ public class HouseEnv extends Environment {
 
     // Acción de tirar una lata en el entorno
     public static final Literal generateTrash = Literal.parseLiteral("generateTrash(can)");
+
+    //Acción de generar una lata para tirar en posicion del owner
+    public static final Literal generateTrashNotRandom = Literal.parseLiteral("generateTrashNotRandom(can)");
 	
 	// Acción de crear un plato sucio
     public static final Literal generatePlato = Literal.parseLiteral("generatePlato(plato)");
 
     // Acción de recoger una lata del entorno
     public static final Literal pickTrash = Literal.parseLiteral("pickTrash(rlimpiador,trash)");
+    public static final Literal pickTrashO = Literal.parseLiteral("pickTrashO(owner,trash)");
 	
 	// Acción de recoger un plato del owner
     public static final Literal pickPlato = Literal.parseLiteral("pickPlato(rmayordomo,plato)");
@@ -85,7 +89,9 @@ public class HouseEnv extends Environment {
     public static final Literal atOwnerBin = Literal.parseLiteral("at(owner,bin)");
     public static final Literal atOwnerCouch = Literal.parseLiteral("at(owner,couch)");
     public static final Literal atOwnerFridge = Literal.parseLiteral("at(owner,fridge)");
+    public static final Literal atOwnerTrash = Literal.parseLiteral("at(owner,trash)");
 
+    
 
     static Logger logger = Logger.getLogger(HouseEnv.class.getName());
 
@@ -176,7 +182,13 @@ public class HouseEnv extends Environment {
         if (model.lBinPositions.contains(lOwner)){
             addPercept("owner", atOwnerBin);
         }
-        else if(model.lCouch.isNeigbour(lOwner)){
+        else if(!model.lTrash.isEmpty() && model.lTrash.get(0).isNeigbour(lOwner)){
+            addPercept("owner", atOwnerTrash);
+        }
+        else if(model.lCouch.distance(lOwner) == 0){
+            System.out.println("ENTRA POR AQUI EL LCOUCH-----------");
+            System.out.println(lOwner.toString());
+            System.out.println(model.lCouch.toString());    
             addPercept("owner", atOwnerCouch);
         }
         else if(model.lFridgePositions.contains(lOwner)){
@@ -197,6 +209,7 @@ public class HouseEnv extends Environment {
         if(model.lTrash.size() > 0){
             addPercept("rmayordomo", Literal.parseLiteral("trashInEnv("+model.lTrash.size()+")"));
 			addPercept("rlimpiador", Literal.parseLiteral("trashInEnv("+model.lTrash.size()+")"));
+            addPercept("owner", Literal.parseLiteral("trashInEnv("+model.lTrash.size()+")"));
         }
 
         // Percepción de stock de cervezas para el agente owner
@@ -216,9 +229,37 @@ public class HouseEnv extends Environment {
     public boolean executeAction(String ag, Structure action) {
         System.out.println("["+ag+"] doing: "+action);
         boolean result = false;
+        if (action.getFunctor().equals("move_to")){
+            System.out.println("move to fallas");
+            String l = action.getTerm(0).toString();
+            System.out.println("falla por aqui");
+            Location dest = null;
+
+             if(ag.equals("owner")){
+                System.out.println("entra en agent ewquals owner");
+                if (l.equals("fridge")) {
+                    dest = model.lFridge;
+                } else if (l.equals("couch")) {
+                    dest = model.lCouch;
+                } else if(l.equals("bin")){
+                    dest = model.lBin;
+                } else if(l.equals("bin")){
+                    dest = model.lBin;
+                } else if(l.equals("trash")){
+                    dest = model.lTrash.get(0);
+                }
+            }
+            try {
+                
+                result = model.moveTo(ag, dest);
+                System.out.println("entra en el try catch");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         // Acciones de movimiento
-        if (action.getFunctor().equals("move_towards")){
+        else if (action.getFunctor().equals("move_towards")){
             String l = action.getTerm(0).toString();
             Location dest = null;
 
@@ -252,7 +293,6 @@ public class HouseEnv extends Environment {
                 }
             }
 
-
             // Acciones de movimiento para el robot basurero
             else if(ag.equals("rbasurero")){
                 if(l.equals("bin")){
@@ -261,8 +301,6 @@ public class HouseEnv extends Environment {
                     dest = model.lRBasurero;
                 }
             }
-			
-			
 
             // Acciones de movimiento para el robot de pedidos
             else if(ag.equals("rpedidos")){
@@ -283,8 +321,14 @@ public class HouseEnv extends Environment {
                     dest = model.lCouch;
                 } else if(l.equals("bin")){
                     dest = model.lBin;
+                } else if(l.equals("bin")){
+                    dest = model.lBin;
+                } else if(l.equals("trash")){
+                    dest = model.lTrash.get(0);
                 }
             }
+
+
 
             try {
                 result = model.moveTowards(ag, dest);
@@ -328,6 +372,11 @@ public class HouseEnv extends Environment {
         else if(action.equals(generateTrash) && ag.equals("owner")){
             result = model.generateTrash();
         }
+
+        //Accion de tirar basura en couch del owner
+        else if(action.equals(generateTrashNotRandom) && ag.equals("owner")){
+            result = model.generateTrashNotRandom();
+        }
 		
 		// Acción de generar platos sucios
         else if(action.equals(generatePlato) && ag.equals("owner")){
@@ -336,6 +385,11 @@ public class HouseEnv extends Environment {
         
         // Acción de recoger basura del entorno
         else if(action.equals(pickTrash) 
+            && (ag.equals("rlimpiador") || ag.equals("owner"))){
+			result = model.pickTrash();	
+		}
+
+        else if(action.equals(pickTrashO) 
             && (ag.equals("rlimpiador") || ag.equals("owner"))){
 			result = model.pickTrash();	
 		}

@@ -228,6 +228,59 @@ public class HouseModel extends GridWorldModel {
 			
 	}
 
+    private String getNextMoveTo(Location dest, Location or){
+		ArrayList<Pair<Location, String>> uncheckedMoves = new ArrayList<Pair<Location, String>>();
+		
+		ArrayList<Integer> explored = new ArrayList<Integer>();
+		
+		int i = ~0;
+		
+		uncheckedMoves.add(new Pair<Location, String>(or, ""));
+		explored.add(or.x + or.y * GSize);
+		
+		do{
+			Location l = uncheckedMoves.get(0).getL();
+			String moves = uncheckedMoves.get(0).getR();
+			uncheckedMoves.remove(0);
+			
+			
+			if(l.isNeigbour(dest)) return moves;
+			
+			// TOP
+			if   (isFree(i, l.x, l.y - 1) && !explored.contains(l.x + (l.y - 1) * GSize)) {
+				uncheckedMoves.add(new Pair<Location, String>(new Location(l.x, l.y - 1), moves + 'u'));
+				explored.add(l.x + (l.y - 1) * GSize);
+
+			}
+			
+			// BOTTOM
+			if(isFree(i, l.x, l.y + 1) && !explored.contains(l.x + (l.y + 1) * GSize)) {
+				uncheckedMoves.add(new Pair<Location, String>(new Location(l.x, l.y + 1), moves + 'b'));
+				explored.add(l.x + (l.y + 1) * GSize);
+
+			}
+			
+			
+			// LEFT
+			if   (isFree(i, l.x - 1, l.y) && !explored.contains(l.x - 1 + l.y * GSize)) {
+				uncheckedMoves.add(new Pair<Location, String>(new Location(l.x - 1, l.y), moves + 'l'));
+				explored.add(l.x - 1 + l.y * GSize);
+
+			}
+			
+			// RIGHT
+			if(isFree(i, l.x + 1, l.y) && !explored.contains(l.x + 1 + l.y * GSize)) { 
+				uncheckedMoves.add(new Pair<Location, String>(new Location(l.x + 1, l.y), moves + 'r'));
+				explored.add(l.x + 1 + l.y * GSize);
+			}
+					
+			
+		} while(!uncheckedMoves.isEmpty());
+						
+		return "n";
+			
+	}
+
 
     public HouseModel() {
         // Creación del grid con el tamaño definido en GSize
@@ -335,6 +388,36 @@ public class HouseModel extends GridWorldModel {
 
 		
         
+        return true;
+    }
+
+    boolean moveTo(String ag, Location dest) {
+
+        int nAg = this.agents.get(ag);
+        Location lAgent = getAgPos(nAg);
+        
+        String move = getNextMoveTo(dest, lAgent);
+		
+		
+		if(!move.isEmpty() && move.charAt(0) == 'u') {
+			lAgent.y--;
+			move = move.substring(1);
+		} else if(  !move.isEmpty() && move.charAt(0) == 'l') {
+			lAgent.x--;
+			move = move.substring(1);
+		} else if( !move.isEmpty()  && move.charAt(0) == 'b' ){
+			lAgent.y++;
+			move = move.substring(1);
+		} else if ( !move.isEmpty() && move.charAt(0) == 'r' ) {
+			lAgent.x++;
+			move = move.substring(1);
+		} else if(!move.isEmpty() && move.charAt(0) == 'n' ){
+		    move = getNextMoveTo(dest, lAgent);
+			move = move.substring(1);
+		}
+
+        setAgPos(nAg, lAgent);
+
         return true;
     }
 
@@ -487,6 +570,34 @@ public class HouseModel extends GridWorldModel {
         lTrash.add(location);
         return true;
 
+    }
+
+    boolean generateTrashNotRandom() {
+        Location location;
+        do{
+            int x = (GSize-1);
+            int y = (GSize-1);
+            location = new Location(x, y);
+        }while(
+            //lObstacules.contains(location) &&
+            location.equals(lBin) &&
+            location.equals(lFridge) &&
+            location.equals(lCouch) &&
+            location.equals(lDelivery) &&
+			location.equals(lLavavajillas) &&
+			location.equals(lLacena) &&
+			lFridgePositions.contains(location) &&
+			lBinPositions.contains(location) &&
+			lCouchPositions.contains(location) &&
+			lDeliveryPositions.contains(location) &&
+			lLavavajillasPositions.contains(location) &&
+			lLacenaPositions.contains(location) &&
+			lObstacules.contains(location)
+        );
+        
+        add(TRASH, location);
+        lTrash.add(location);
+        return true;
     }
 	
 	// Crear los platos sucios

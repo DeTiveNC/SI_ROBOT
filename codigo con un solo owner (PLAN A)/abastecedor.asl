@@ -44,8 +44,8 @@ stock(pinchito, 20, empanada).
 		.send(supermarket2, tell, stock(beer, 50, volldamm));
 		.send(supermarket2, tell, stock(beer, 50, redvintage));
 		.send(supermarket2, tell, stock(beer, 50, heineken));
-		.send(supermarket1, tell, stock(pinchito, 20, tortilla));
-		.send(supermarket1, tell, stock(pinchito, 20, empanada));
+		.send(supermarket2, tell, stock(pinchito, 20, tortilla));
+		.send(supermarket2, tell, stock(pinchito, 20, empanada));
 		.random(X);
 		A = X*10+1;
 		.random(Y);

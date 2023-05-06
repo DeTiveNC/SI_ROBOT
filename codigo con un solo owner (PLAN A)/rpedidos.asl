@@ -1,16 +1,16 @@
 
-+delivered(beer,pinchito, Qtd, OrderId, S, M, T, Cant)[source(rmayordomo)]
++delivered(T, Qtd, OrderId, S, M)[source(rmayordomo)]
    <- .println("El robot de pedidos se dirige a la zona de entrega");
       !go_at(rpedidos, delivery);
-      .concat("La orden es de: ", Qtd+Cant, " beer y pinchito.", Ms);
+      .concat("La orden es de: ", Qtd, " de ", T, Ms);
 	   .send(S, tell, msg(Ms));
       .abolish(money(_));
-      getDelivery(beer, Qtd+Cant, M);
+      getDelivery(T, Qtd, M);
       .println("El robot de pedidos se dirige al frigorifico");
       !go_at(rpedidos, fridge);
       ?beer(N);
-      reponer(beer, N);
-      .send(rmayordomo, tell, available(beer,fridge));
+      reponer(T, N);
+      .send(rmayordomo, tell, available(T,fridge));
       !go_at(rpedidos, baseRPedidos).
 
 

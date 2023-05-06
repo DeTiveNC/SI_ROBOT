@@ -45,7 +45,7 @@ public class HouseView extends GridWorldView {
             case HouseModel.DELIVERY:
                 super.drawAgent(g, x, y, Color.GRAY, -1);
                 g.setColor(Color.black);
-                drawString(g, x, y, defaultFont, "Delivery(B: "+hmodel.deliveryBeers+" ,P:"+hmodel.deliveryPinch +")");
+                drawString(g, x, y, defaultFont, "Delivery");
                 break;
             
             // Dibujado del cubo de basura

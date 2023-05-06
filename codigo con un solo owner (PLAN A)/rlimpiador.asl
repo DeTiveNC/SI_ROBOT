@@ -1,15 +1,23 @@
 trash(can, 0).
+contarPlaLav(plato, 0).
 
 
 +hay_basura(rlimpiador, trash) [source(rmayordomo)]
    <- 
+   	  ?contarPlaLav(plato, C);
+	  D=C+1;
       !recogerBasura(rlimpiador, trash);
       !tirarBasura(rlimpiador, bin);
       .println("El robot limpiador vuelve a su posición");
       !go_at(rlimpiador, baseRLimpiador);
 	  !hay_papeleraBin(rbasurero, bin);
       .abolish(hay_basura(rlimpiador, trash));
-	  .send(rmayordomo, achieve, limpiezaTerminada).
+	  .send(rmayordomo, achieve, limpiezaTerminada);
+	  -+contarPlaLav(plato,D);
+	  if(D >= 5){
+	  	.send(rmayordomo, tell, platosSucios);
+	  	.send(rmayordomo, achieve, recogerPlatoSucio(rmayordomo,plato));
+	  }.
 
 
 +!hay_papeleraBin(rbasurero, bin) <-

@@ -146,12 +146,6 @@ public class HouseEnv extends Environment {
         else if(model.lRLimpiador.isNeigbour(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBase);
         }
-		else if (model.lCouchPositions.contains(lRLimpiador)) {
-            addPercept("rlimpiador", atRLimpiadorCouch);
-        }
-		else if(model.lLavavajillasPositions.contains(lRLimpiador)){
-            addPercept("rlimpiador", atRLimpiadorLava);
-        }
 
 
         // Percepciones de posición del agente robot rbasurero

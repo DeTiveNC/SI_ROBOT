@@ -1,8 +1,5 @@
 /* Initial beliefs and rules */
-trash(can, 0).
-platoSuc(plato, 0).
-contarPlaLav(plato, 0).
-/**/
+
 available(beer,fridge).
 
 // Limite de cerveza que puede beber el owner
@@ -11,7 +8,7 @@ money(0).
 	
 
 // Basura que posee el robot
-trash(can, 0). // Ya no es necesario
+
 
 // Número de cervezas que se piden a la vez
 nbeersPerTime(3).
@@ -136,10 +133,6 @@ too_much(B) :-
               " beers a day! I am very sorry about that!",M);
       .send(owner,tell,msg(M));
       .send(owner, tell, ~couldDrink(beer));
-	  +platosSucios;
-	  !recogerPlatoSucio(rmayordomo,plato);
-	  !dejarPlato(rmayordomo, lavavajillas);
-	  !lavavajillas_lleno(rmayordomo, lavavajillas);
       !go_at(rmayordomo, baseRMayordomo);
       .println("El Robot mayordomo descansa porque Owner ha bebido mucho hoy.");
       .wait(10000);
@@ -185,33 +178,22 @@ too_much(B) :-
 
 // Apartado limpieza platos sucios
 +!recogerPlatoSucio(rmayordomo,plato) : platosSucios
-   <-
-     .println("El robot limpiador va a buscar el plato sucio");
+   <- .println("El robot rmayordomo va a buscar el plato sucio");
       !go_at(rmayordomo, couch);
-      .println("El robot limpiador recoge el plato");
+      .println("El robot rmayordomo recoge el plato");
       pickPlato(rmayordomo, plato);
-      ?platoSuc(plato, E);
-      -+platoSuc(plato, E+1);
 	  -platosSucios;
-      !recogerPlatoSucio(rmayordomo,plato).
-+!recogerPlatoSucio(rmayordomo,plato).
-
-+!dejarPlato(rmayorodomo, lavavajillas): platoSuc(plato, F) & F>0
-   <- !go_at(rmayordomo, lavavajillas);
       !desecharP(rmayordomo, plato).
-+!dejarPlato(rmayordomo, lavavajillas).
 
-+!desecharP(rmayordomo, plato) : platoSuc(plato, F) & F>0
-   <- desecharP(rmayordomo, plato);
-      -+platoSuc(plato, F-1);
-      !desecharP(rmayorodomo, plato).
-+!desecharP(rmayordomo,plato)
-   <- .println("El robot rmayordomo ha depositado todos los platos en el lavavajillas").
++!desecharP(rmayordomo, plato)
+   <-  !go_at(rmayordomo,lavavajillas);
+   	   desecharP(rmayordomo, plato);
+       !lavavajillas_lleno(rmayordomo, lavavajillas).
+
    
   //Apartado coger platos sucios y llevarlos a la lacena
-+!lavavajillas_lleno(rmayordomo, lavavajillas) 
-    <-  !go_at(rmayordomo, lavavajillas);
-		.println("Poniendo el lavavajillas");
++!lavavajillas_lleno(rmayordomo, lavavajillas)
+    <-  .println("Poniendo el lavavajillas");
 		.wait(6000);
         vaciarLa(lavavajillas);
         !go_at(rmayordomo, lacena);

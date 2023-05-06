@@ -46,7 +46,7 @@ public class HouseEnv extends Environment {
     public static final Literal desecharP = Literal.parseLiteral("desecharP(rmayordomo,plato)");
 	
     // Acciones de tirar la basura el el cubo
-    public static final Literal desecharRmayordomoTrash = Literal.parseLiteral("desechar(rmayordomo,trash)");
+    public static final Literal desecharRLimpiadorTrash = Literal.parseLiteral("desechar(rlimpiador,trash)");
     public static final Literal desecharOwnerTrash = Literal.parseLiteral("desechar(owner,trash)");
 	
 	// Acciones de eliminar los platos del lavavajillas
@@ -68,6 +68,13 @@ public class HouseEnv extends Environment {
     public static final Literal atRBasureroBin = Literal.parseLiteral("at(rbasurero,bin)");
 	public static final Literal atRBasureroBase = Literal.parseLiteral("at(rbasurero,baseRBasurero)");
 	
+	// Creencias "at" para el agente limpiador
+    public static final Literal atRLimpiadorBin = Literal.parseLiteral("at(rlimpiador,bin)");
+    public static final Literal atRLimpiadorTrash = Literal.parseLiteral("at(rlimpiador,trash)");
+    public static final Literal atRLimpiadorBase = Literal.parseLiteral("at(rlimpiador,baseRLimpiador)");
+	public static final Literal atRLimpiadorCouch = Literal.parseLiteral("at(rlimpiador,couch)");
+	public static final Literal atRLimpiadorLava = Literal.parseLiteral("at(rlimpiador,lavavajillas)");
+
 
     // Creencias "at" para el agente pedidos
     public static final Literal atRPedidosDelivery = Literal.parseLiteral("at(rpedidos,delivery)");
@@ -102,6 +109,7 @@ public class HouseEnv extends Environment {
         // Limpieza de creencias de todos los agentes
         clearPercepts("rmayordomo");
         clearPercepts("rbasurero");
+		 clearPercepts("rlimpiador");
         clearPercepts("rpedidos");
         clearPercepts("owner");
 
@@ -109,6 +117,7 @@ public class HouseEnv extends Environment {
         Location lRMayordomo = model.getAgPos(model.agents.get("rmayordomo"));
         Location lRBasurero = model.getAgPos(model.agents.get("rbasurero"));
         Location lRPedidos = model.getAgPos(model.agents.get("rpedidos"));
+		Location lRLimpiador = model.getAgPos(model.agents.get("rlimpiador"));
         Location lOwner = model.getAgPos(model.agents.get("owner"));
 
         // Percepciones de posición del agente rmayordomo
@@ -123,9 +132,27 @@ public class HouseEnv extends Environment {
         }
         else if(model.lLavavajillasPositions.contains(lRMayordomo)){
             addPercept("rmayordomo", atRMayordomoLava);
-        } else if (model.lLacenaPositions.contains(lRLavador)){
+        } else if (model.lLacenaPositions.contains(lRMayordomo)){
             addPercept("rmayordomo", atRMayordomoLace);
         }
+		
+		// Percepciones de posición del agente rlimpiador
+        if (model.lBinPositions.contains(lRLimpiador)){
+            addPercept("rlimpiador", atRLimpiadorBin);
+        }
+        else if(!model.lTrash.isEmpty() && model.lTrash.get(0).isNeigbour(lRLimpiador)){
+            addPercept("rlimpiador", atRLimpiadorTrash);
+        }
+        else if(model.lRLimpiador.isNeigbour(lRLimpiador)){
+            addPercept("rlimpiador", atRLimpiadorBase);
+        }
+		else if (model.lCouchPositions.contains(lRLimpiador)) {
+            addPercept("rlimpiador", atRLimpiadorCouch);
+        }
+		else if(model.lLavavajillasPositions.contains(lRLimpiador)){
+            addPercept("rlimpiador", atRLimpiadorLava);
+        }
+
 
         // Percepciones de posición del agente robot rbasurero
         if (model.lBinPositions.contains(lRBasurero)){
@@ -169,6 +196,7 @@ public class HouseEnv extends Environment {
         // Percepción de basura en el entorno para el agente mayordomo
         if(model.lTrash.size() > 0){
             addPercept("rmayordomo", Literal.parseLiteral("trashInEnv("+model.lTrash.size()+")"));
+			addPercept("rlimpiador", Literal.parseLiteral("trashInEnv("+model.lTrash.size()+")"));
         }
 
         // Percepción de stock de cervezas para el agente owner
@@ -208,6 +236,22 @@ public class HouseEnv extends Environment {
                     dest = model.lLacena;
                 }
             }
+			
+			 // Acciones de movimiento para el robot limpiador
+            else if(ag.equals("rlimpiador")){
+                if(l.equals("bin")){
+                    dest = model.lBin;
+                } else if(l.equals("trash")){
+                    dest = model.lTrash.get(0);
+                } else if(l.equals("baseRLimpiador")){
+                    dest = model.lRLimpiador;
+                }else if (l.equals("couch")) {
+                    dest = model.lCouch;
+                }else if (l.equals("lavavajillas")) {
+                    dest = model.lLavavajillas;
+                }
+            }
+
 
             // Acciones de movimiento para el robot basurero
             else if(ag.equals("rbasurero")){
@@ -292,7 +336,7 @@ public class HouseEnv extends Environment {
         
         // Acción de recoger basura del entorno
         else if(action.equals(pickTrash) 
-            && (ag.equals("rmayordomo") || ag.equals("owner"))){
+            && (ag.equals("rlimpiador") || ag.equals("owner"))){
 			result = model.pickTrash();	
 		}
 		
@@ -306,7 +350,7 @@ public class HouseEnv extends Environment {
         // Acción de tiral la basura al cubo
         else if
         (
-            (action.equals(desecharRmayordomoTrash) && ag.equals("rmayordomo")) || 
+            (action.equals(desecharRLimpiadorTrash) && ag.equals("rlimpiador")) || 
             (action.equals(desecharOwnerTrash) && ag.equals("owner"))
         ){
             result = model.desechar();	

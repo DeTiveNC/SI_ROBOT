@@ -419,6 +419,7 @@ public class HouseModel extends GridWorldModel {
 	
 	// desechar los platos
     boolean desecharP(){
+		System.out.println("adadwadadawdwadadawdawda");
 		if(platosALimpiar > 0){
 			  platosLimpiar+=platosALimpiar;
 			  platosALimpiar=0;
@@ -523,6 +524,7 @@ public class HouseModel extends GridWorldModel {
         if (deliveryBeers > 0) {
             deliveryBeers-=n;
             rpedidosBeers+=n;
+			pinchito+=n;
             if(view != null){
                 view.update(lDelivery.x,lDelivery.y);
             }

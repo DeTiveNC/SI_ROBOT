@@ -52,6 +52,7 @@ stock(beer, 50, heineken).
 		.send(supermarket2, tell, price(beer, E, redvintage));
 		.send(supermarket2, achieve, actualizar_moneySuperNeg(50*A+50*B+50*C+50*D+50*E)).
 
++dar_nuevo_stock(T, P, M) [source(Agt)] <- .send(Agt, tell, stock(T, 50, M)); .random(Y); A=Y*10+1; .send(Agt, tell, price(T,A,M)).
 
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);

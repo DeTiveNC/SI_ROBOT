@@ -80,8 +80,9 @@ return: */
 
 +!order(_, T, C, M)[source(Ag)] : stock(T, P, M) & P < C
   <- .print("Out of stock: ", T);
-  	 .send(abastecedor, tell, dar_precioystock);
-     .send(Ag, tell, not_enough_stock(T, C, P)).
+  	 .send(abastecedor, tell, dar_nuevo_stock(T, P, M));
+	 .wait(100);
+     !order(Owner, T, C, M).
 	 
 +msg(M)[source(Ag)] : true
    <- .print("Message from ",Ag,": ",M);

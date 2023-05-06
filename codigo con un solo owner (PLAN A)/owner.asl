@@ -60,6 +60,15 @@ platoVa(plato, 0).
 	<- .wait(100); //Esperando por la cerveza TODO: intentar solucionar recursividad		
 	   !escoge_cerveza.
 
++!escoge_pinchito : seleccionProductos(pinchito, L1)[source(rmayordomo)]
+	<- .random(L1, X);
+		!despieza(X, M,_);
+		.print("Pinchito elegido: ", M);
+		.send(rmayordomo, tell, pinchito_escogido(M)).
+
++!escoge_pinchito
+	<- .wait(100); //Esperando por la cerveza TODO: intentar solucionar recursividad		
+	   !escoge_pinchito.
 /*
 	pide_lista_productos/0
 	private
@@ -68,8 +77,10 @@ platoVa(plato, 0).
 	   
 +!pide_lista_productos 
 	<-
-	.send(rmayordomo, achieve, lista_productos(beer));	
-	!escoge_cerveza.	   
+	.send(rmayordomo, achieve, lista_productos(beer));
+	.send(rmayordomo, achieve, lista_productos(pinchito));	
+	!escoge_cerveza;
+	!escoge_pinchito.	   
 	   
 /*
 	get/1 -> cerveza

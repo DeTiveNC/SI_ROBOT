@@ -41,25 +41,23 @@ last_order_id(1). // initial belief
 //lista_productos/1 -> tipo
 // public: rmayordomo
 //return: lista de seleccion_productos(L[price/3])
-+!lista_productos(T)[source(rmayordomo)]: price(beer, _, _) <-
++!lista_productos(beer)[source(rmayordomo)]: price(beer, _, _) <-
 	.println("Envío de precio al robot mayordomo");
-	.findall(q(M, C), price(T, C, M), L);
+	.findall(q(M, C), price(beer, C, M), L);
 	.print("Cervezas disponibles: ", L);
-	.send(rmayordomo, tell, seleccion_productos(L)).	
+	.send(rmayordomo, tell, seleccion_productos(beer, L)).	
 
-+!lista_productos(T)[source(rmayordomo)]: price(pinchito, _, _) <-
++!lista_productos(pinchito)[source(rmayordomo)]: price(pinchito, _, _) <-
 	.println("Envío de precio al robot mayordomo");
-	.findall(q(M, C), price(T, C, M), L);
+	.findall(q(M, C), price(pinchito, C, M), L);
 	.print("Pinchito disponibles: ", L);
-	.send(rmayordomo, tell, seleccion_productos(L)).
+	.send(rmayordomo, tell, seleccion_productos(pinchito, L)).
+
 //Default	
 +!lista_productos(P): true
 	<- .print("No hay datos sobre este producto").
 
-// plan to achieve the goal "order" for agent Ag
-/*order/3 -> tipo, cantidad, marca
-public: cualquiera(rmayordomo)
-return: */
+
 +pago_order(OrderId, P)[source(Agt)]: pending_order(OrderId, P, T, M, C)
 	<- !actualizar_moneySuper(P);
 		deliver(T, P);
@@ -68,10 +66,12 @@ return: */
 
 +pago_order(OrderId, P)[source(Agt)]
 	<- 
-		?pending_order(Order, Pp, T, M);
+		?pending_order(Order, P, T, M, C);
 		.print(OrderId," ", Order," ", P," ", Pp).
 	
-
+/*order/3 -> tipo, cantidad, marca
+public: cualquiera(rmayordomo)
+return: */
 +!order(Owner, T, C, M)[source(Ag)] : stock(T, P, M2) & P >= C & M = M2 // comprueba la cantidad de stock
   <- 
   	 !actualiza_order_id(OrderId); //1: se actualiza el order_id

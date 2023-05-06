@@ -63,6 +63,7 @@ public class HouseEnv extends Environment {
     public static final Literal atRMayordomoBase = Literal.parseLiteral("at(rmayordomo,baseRMayordomo)");
 	public static final Literal atRMayordomoLava = Literal.parseLiteral("at(rmayordomo,lavavajillas)");
 	public static final Literal atRMayordomoLace = Literal.parseLiteral("at(rmayordomo,lacena)");
+	public static final Literal atRMayordomoBase2 = Literal.parseLiteral("at(rmayordomo,owner)");
 
     // Creencias "at" para el agente basurero
     public static final Literal atRBasureroBin = Literal.parseLiteral("at(rbasurero,bin)");
@@ -134,7 +135,10 @@ public class HouseEnv extends Environment {
             addPercept("rmayordomo", atRMayordomoLava);
         } else if (model.lLacenaPositions.contains(lRMayordomo)){
             addPercept("rmayordomo", atRMayordomoLace);
-        }
+        } else if(model.lOwner.equals(lRMayordomo)){
+			addPercept("rmayordomo",atRMayordomoBase2);	
+		}
+		
 		
 		// Percepciones de posición del agente rlimpiador
         if (model.lBinPositions.contains(lRLimpiador)){
@@ -205,7 +209,6 @@ public class HouseEnv extends Environment {
 
     @Override
     public boolean executeAction(String ag, Structure action) {
-        System.out.println("["+ag+"] doing: "+action);
         boolean result = false;
 
         // Acciones de movimiento
@@ -225,7 +228,9 @@ public class HouseEnv extends Environment {
                     dest = model.lLavavajillas;
                 } else if(l.equals("lacena")){
                     dest = model.lLacena;
-                }
+                } else if(l.equals("owner")){
+					dest = model.lOwner;
+				}
             }
 			
 			 // Acciones de movimiento para el robot limpiador
@@ -382,7 +387,7 @@ public class HouseEnv extends Environment {
             // wait 4 seconds to finish "deliver"
             try {
                 Thread.sleep(4000);
-                result = model.addBeerDelivery((int)((NumberTerm)action.getTerm(1)).solve());
+                result = model.addBeerPinchDelivery((int)((NumberTerm)action.getTerm(1)).solve());
             } catch (Exception e) {
                 logger.info("Failed to execute action deliver!"+e);
             }
@@ -400,7 +405,7 @@ public class HouseEnv extends Environment {
         // Acción de reponer las cervezas de la nevera
         else if(action.getFunctor().equals("reponer") && ag.equals("rpedidos")){
             try {
-                result = model.addBeerFridge((int)((NumberTerm)action.getTerm(1)).solve());
+                result = model.addBeerPinchFridge((int)((NumberTerm)action.getTerm(1)).solve());
             } catch (NoValueException e) {
                 logger.info("Failed to execute action deliver!"+e);
             }

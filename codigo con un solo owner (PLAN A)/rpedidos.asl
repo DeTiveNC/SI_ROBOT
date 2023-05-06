@@ -1,11 +1,11 @@
 
-+delivered(beer,Qtd, OrderId, S, M)[source(rmayordomo)]
++delivered(beer,pinchito, Qtd, OrderId, S, M, T, Cant)[source(rmayordomo)]
    <- .println("El robot de pedidos se dirige a la zona de entrega");
       !go_at(rpedidos, delivery);
-      .concat("the order has been delivered: ", Qtd, " beers.", Ms);
+      .concat("La orden es de: ", Qtd+Cant, " beer y pinchito.", Ms);
 	   .send(S, tell, msg(Ms));
       .abolish(money(_));
-      getDelivery(beer, Qtd, M);
+      getDelivery(beer, Qtd+Cant, M);
       .println("El robot de pedidos se dirige al frigorifico");
       !go_at(rpedidos, fridge);
       ?beer(N);

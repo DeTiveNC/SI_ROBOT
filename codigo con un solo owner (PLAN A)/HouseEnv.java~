@@ -63,6 +63,7 @@ public class HouseEnv extends Environment {
     public static final Literal atRMayordomoBase = Literal.parseLiteral("at(rmayordomo,baseRMayordomo)");
 	public static final Literal atRMayordomoLava = Literal.parseLiteral("at(rmayordomo,lavavajillas)");
 	public static final Literal atRMayordomoLace = Literal.parseLiteral("at(rmayordomo,lacena)");
+	public static final Literal atRMayordomoBase2 = Literal.parseLiteral("at(rmayordomo,owner)");
 
     // Creencias "at" para el agente basurero
     public static final Literal atRBasureroBin = Literal.parseLiteral("at(rbasurero,bin)");
@@ -134,7 +135,10 @@ public class HouseEnv extends Environment {
             addPercept("rmayordomo", atRMayordomoLava);
         } else if (model.lLacenaPositions.contains(lRMayordomo)){
             addPercept("rmayordomo", atRMayordomoLace);
-        }
+        } else if(model.lOwner.equals(lRMayordomo)){
+			addPercept("rmayordomo",atRMayordomoBase2);	
+		}
+		
 		
 		// Percepciones de posición del agente rlimpiador
         if (model.lBinPositions.contains(lRLimpiador)){
@@ -145,12 +149,6 @@ public class HouseEnv extends Environment {
         }
         else if(model.lRLimpiador.isNeigbour(lRLimpiador)){
             addPercept("rlimpiador", atRLimpiadorBase);
-        }
-		else if (model.lCouchPositions.contains(lRLimpiador)) {
-            addPercept("rlimpiador", atRLimpiadorCouch);
-        }
-		else if(model.lLavavajillasPositions.contains(lRLimpiador)){
-            addPercept("rlimpiador", atRLimpiadorLava);
         }
 
 
@@ -178,9 +176,6 @@ public class HouseEnv extends Environment {
         }
         else if(model.lCouch.isNeigbour(lOwner)){
             addPercept("owner", atOwnerCouch);
-        }
-        else if(model.lFridgePositions.contains(lOwner)){
-            addPercept("owner", atOwnerFridge);
         }
 
         // Percepción de stock de cervezas para el agente mayordomo
@@ -214,7 +209,6 @@ public class HouseEnv extends Environment {
 
     @Override
     public boolean executeAction(String ag, Structure action) {
-        System.out.println("["+ag+"] doing: "+action);
         boolean result = false;
 
         // Acciones de movimiento
@@ -234,7 +228,9 @@ public class HouseEnv extends Environment {
                     dest = model.lLavavajillas;
                 } else if(l.equals("lacena")){
                     dest = model.lLacena;
-                }
+                } else if(l.equals("owner")){
+					dest = model.lOwner;
+				}
             }
 			
 			 // Acciones de movimiento para el robot limpiador

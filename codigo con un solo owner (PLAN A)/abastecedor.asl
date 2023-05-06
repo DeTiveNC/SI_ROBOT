@@ -44,6 +44,8 @@ stock(pinchito, 20, empanada).
 		.send(supermarket2, tell, stock(beer, 50, volldamm));
 		.send(supermarket2, tell, stock(beer, 50, redvintage));
 		.send(supermarket2, tell, stock(beer, 50, heineken));
+		.send(supermarket1, tell, stock(pinchito, 20, tortilla));
+		.send(supermarket1, tell, stock(pinchito, 20, empanada));
 		.random(X);
 		A = X*10+1;
 		.random(Y);
@@ -63,9 +65,9 @@ stock(pinchito, 20, empanada).
 		.send(supermarket2, tell, price(beer, D, volldamm));
 		.send(supermarket2, tell, price(beer, A, heineken));
 		.send(supermarket2, tell, price(beer, E, redvintage));
-		.send(supermarket1, tell, price(pinchito, F, tortilla));
-		.send(supermarket1, tell, price(pinchito, G, empanada));
-		.send(supermarket1, achieve, actualizar_moneySuperNeg(50*A+50*B+50*C+50*D+50*E+20*F+20*G)).
+		.send(supermarket2, tell, price(pinchito, F, tortilla));
+		.send(supermarket2, tell, price(pinchito, G, empanada));
+		.send(supermarket2, achieve, actualizar_moneySuperNeg(50*A+50*B+50*C+50*D+50*E+20*F+20*G)).
 
 +dar_nuevo_stock(T, P, M) [source(Agt)] <- .send(Agt, tell, stock(T, 50, M)); .random(Y); A=Y*10+1; .send(Agt, tell, price(T,A,M)).
 

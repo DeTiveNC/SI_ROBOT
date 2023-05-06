@@ -46,6 +46,12 @@ last_order_id(1). // initial belief
 	.findall(q(M, C), price(T, C, M), L);
 	.print("Cervezas disponibles: ", L);
 	.send(rmayordomo, tell, seleccion_productos(L)).	
+
++!lista_productos(T)[source(rmayordomo)]: price(pinchito, _, _) <-
+	.println("Envío de precio al robot mayordomo");
+	.findall(q(M, C), price(T, C, M), L);
+	.print("Pinchito disponibles: ", L);
+	.send(rmayordomo, tell, seleccion_productos(L)).
 //Default	
 +!lista_productos(P): true
 	<- .print("No hay datos sobre este producto").

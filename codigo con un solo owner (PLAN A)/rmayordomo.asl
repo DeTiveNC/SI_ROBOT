@@ -25,9 +25,6 @@ too_much(B) :-
 !bring(owner, beer).
 !pide_lista_productos_super.
 
-
-
-
 /* Planes */
 
 +!despieza([],[],[]).
@@ -45,7 +42,9 @@ too_much(B) :-
 */	 	 
 +!pide_lista_productos_super 
 	<- .send(supermarket1, achieve, lista_productos(beer));
-	   .send(supermarket2, achieve, lista_productos(beer)).
+	   .send(supermarket2, achieve, lista_productos(beer));
+	   .send(supermarket1, achieve, lista_productos(pinchito));
+	   .send(supermarket2, achieve, lista_productos(pinchito)).
 
 /*
 	lista_productos/1: Cerveza

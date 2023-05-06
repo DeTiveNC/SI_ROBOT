@@ -173,9 +173,6 @@ public class HouseEnv extends Environment {
         else if(model.lCouch.isNeigbour(lOwner)){
             addPercept("owner", atOwnerCouch);
         }
-        else if(model.lFridgePositions.contains(lOwner)){
-            addPercept("owner", atOwnerFridge);
-        }
 
         // Percepción de stock de cervezas para el agente mayordomo
         if (model.fridgeOpenMayordomo) {

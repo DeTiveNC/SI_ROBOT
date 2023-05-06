@@ -51,7 +51,7 @@ public class HouseModel extends GridWorldModel {
     int availableBeers  = 3;
 	
 	//Pinchitos Disponibles
-	int pinchito = 10;
+	int pinchito = 3;
 
     // Cervezas en la zona de entrega
     int deliveryBeers = 0;

@@ -47,17 +47,18 @@ public class HouseModel extends GridWorldModel {
 	// Boolean para cambiar de color el bin
 	boolean burnerOn = false;
 
-    // Cervezas disponibles
+    // Cervezas y pinchos disponibles
     int availableBeers  = 3;
+	int availablePinch = 3;
 	
-	//Pinchitos Disponibles
-	int pinchito = 10;
 
-    // Cervezas en la zona de entrega
+    // Cervezas  y pinchitos en la zona de entrega
     int deliveryBeers = 0;
+	int deliveryPinch = 0;
 
-    // Número de cervezas que lleva el robot de pedidos
+    // Número de cervezas y pinchito que lleva el robot de pedidos
     int rpedidosBeers = 0;
+	int rpedidosPinch = 0;
 
     // Número de latas que hay en el cubo de basura
     int cansInTrash = 0;
@@ -347,7 +348,7 @@ public class HouseModel extends GridWorldModel {
                 carryingBeerOwner = true;
             }
             
-			pinchito--;
+			availablePinch--;
             availableBeers--;
             
             if (view != null) view.update(lFridge.x,lFridge.y);
@@ -358,16 +359,20 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Meter cervezas en la zona de entrega
-    boolean addBeerDelivery(int n) {
+    boolean addBeerPinchDelivery(int n) {
         deliveryBeers += n;
+		deliveryPinch += n;
         if (view != null) view.update(lDelivery.x,lDelivery.y);
         return true;
     }
 
-    boolean addBeerFridge(int n) {
-        if(rpedidosBeers > 0){
-            rpedidosBeers-=n;
-            availableBeers+=n;
+    boolean addBeerPinchFridge(int n) {
+		int a = n/2;
+        if(rpedidosBeers > 0 && rpedidosPinch > 0){
+            rpedidosBeers-=a;
+            availableBeers+=a;
+			rpedidosPinch-=a;
+			availablePinch+=a;
             if (view != null) view.update(lFridge.x,lFridge.y);
             return true;
         }
@@ -521,10 +526,12 @@ public class HouseModel extends GridWorldModel {
 
     // Recoger las cervezas del punto de recogida
     public boolean getDelivery(int n) {
+		int a = n/2;
         if (deliveryBeers > 0) {
-            deliveryBeers-=n;
-            rpedidosBeers+=n;
-			pinchito+=n;
+            deliveryBeers-=a;
+            rpedidosBeers+=a;
+			deliveryPinch-=a;
+			rpedidosPinch+=a;
             if(view != null){
                 view.update(lDelivery.x,lDelivery.y);
             }

@@ -93,7 +93,7 @@ too_much(B) :-
 +!envia_precio(Agt, P, OrderId, Supermarket)
 	<- 
 		.print(P, " ");
-		.send(Agt, tell, pagar_cerveza(P, OrderId, Supermarket)).
+		.send(Agt, tell, pagar_cervezaypincho(P, OrderId, Supermarket)).
 
 +!consulta_precio(Agt,beer, M, C): seleccion_productos(beer, L)[source(Agt)] & .member(q(M, C), L)
 	<-  .print("precio de ", M, " en " , Agt, " es ", C).
@@ -149,15 +149,17 @@ too_much(B) :-
       .wait(10000);
       !bring(owner, beer).
 
-+!bring(owner,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) & pinchito_escogido(P)
++!bring(owner,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) & pinchito_escogido(P) 
    <- .println("El robot mayordomo va a buscar una cerveza");
       !go_at(rmayordomo,fridge);
       open(fridge);
       get(beer, pinchito);
 	  ?cerveza_escogida(M);
 	  ?pinchito_escogido(P);
+	  .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, beer, M);
 	  .wait(100);
+	   .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, pinchito, P);
       close(fridge);
       !go_at(rmayordomo,couch);
@@ -166,13 +168,15 @@ too_much(B) :-
       .abolish(asked(beer));
       !bring(owner, beer).	  
    
-+!bring(owner,beer) [source(self)]:  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M) & pinchito_escogido(P)
++!bring(owner,beer) [source(self)]:  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M) & pinchito_escogido(P) 
    <- .println("El robot mayordomo realiza un pedido de ", M);
    	  ?cerveza_escogida(M);
 	  ?pinchito_escogido(P);
+	   .send(rpedidos, tell, trabajando);
       !comprar(supermarket, beer, M);
 	  .wait(100);
 	  println("El robot mayordomo realiza un pedido de ", P);
+	   .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, pinchito, P);
       !bring(owner, beer).
 
@@ -189,7 +193,7 @@ too_much(B) :-
 
 +!limpiezaTerminada <- -entornoLimpio.
 
-+pago_cerveza(C, OrderId, Supermarket)[source(Agt)]
++pago_cervezaypincho(C, OrderId, Supermarket)[source(Agt)]
 	<-  ?money(M);
 		L = M + C;
 		-money(M);

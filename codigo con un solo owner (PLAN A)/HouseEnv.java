@@ -184,8 +184,9 @@ public class HouseEnv extends Environment {
         }
 
         // Percepción de cervezas en robot de pedidos
-        if(model.rpedidosBeers > 0){
+        if(model.rpedidosBeers > 0 && model.rpedidosPinch > 0){
             addPercept("rpedidos", Literal.parseLiteral("beer("+model.rpedidosBeers+")"));
+			addPercept("rpedidos", Literal.parseLiteral("beer("+model.rpedidosPinch+")"));
         }
 
         // Percepción de basura en el entorno para el agente mayordomo

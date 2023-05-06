@@ -102,7 +102,7 @@ platoVa(plato, 0).
 +!restarDinero(C): C == 0 <- true.	
 
 +!restarDinero(C) : money(M) & M >= C
-	<-  .print("Cerveza pagada.");		
+	<-  .print("Cerveza y pincho pagado.");		
 		L = M - C;
 		-money(M);
 		+money(L).
@@ -212,10 +212,10 @@ platoVa(plato, 0).
 	   .wait(500);
 	   !bebe(owner, beer).
 	   
-+pagar_cerveza(C, OrderId, Supermarket)[source(Agt)]
++pagar_cervezaypincho(C, OrderId, Supermarket)[source(Agt)]
 	<-	!restarDinero(C);//TODO: se asume que restar dinero va a salir bien
-		.send(Agt, tell, pago_cerveza(C, OrderId, Supermarket));	
-		-pagar_cerveza(C, OrderId, Supermarket).
+		.send(Agt, tell, pago_cervezaypincho(C, OrderId, Supermarket));	
+		-pagar_cervezapincho(C, OrderId, Supermarket).
 	     		 
 +stock(beer,0)
    :  available(beer,fridge)

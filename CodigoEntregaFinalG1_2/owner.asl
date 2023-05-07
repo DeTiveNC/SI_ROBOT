@@ -103,7 +103,7 @@ contarPlaLav(plato, 0).
 +!restarDinero(C): C == 0 <- true.	
 
 +!restarDinero(C) : money(M) & M >= C
-	<-  .print("Cerveza y pincho pagado.");		
+	<-  .print("Pago realizado.");		
 		L = M - C;
 		-money(M);
 		+money(L).

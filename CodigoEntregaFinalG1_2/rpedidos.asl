@@ -1,7 +1,7 @@
 
 +delivered(T, Qtd, OrderId, S, M)[source(rmayordomo)]
    <- .println("El robot de pedidos se dirige a la zona de entrega");
-   	  .send(rmayordomo, tell, trabajando);
+   	  
       !go_at(rpedidos, delivery);
       .concat("La orden es de: ", Qtd, " de ", T, Ms);
 	   .send(S, tell, msg(Ms));

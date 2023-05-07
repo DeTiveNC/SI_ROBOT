@@ -1,8 +1,7 @@
 //Beliefs locales
 //last_order_id/1 -> identifica numero secuencial de order (solo puede aumentar)
 //moneySuper/1 -> cantidad de dinero que tiene el supermercado
-//stock/3 -> tipo, cantidad y marca
-//price/3 -> tipo, precio y marca
+
 last_order_id(1). // initial belief
 /*Initial goal*/
 !recibir_stockyprecio.
@@ -75,7 +74,7 @@ return: */
 +!order(Owner, T, C, M)[source(Ag)] : stock(T, P, M2) & P >= C & M = M2 // comprueba la cantidad de stock
   <- 
   	 !actualiza_order_id(OrderId); //1: se actualiza el order_id
-	 //!actualiza_moneySuper(M, C, T); //2: actualiza moneySuper 
+	//!actualiza_moneySuper(M, C, T); //2: actualiza moneySuper 
      !decrementa_stock(T, C, M ,P);//3: actualiza stock//2: actualiza stock
 	 ?price(T, Precio, M);
 	 G = Precio * C;

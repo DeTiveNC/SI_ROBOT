@@ -232,7 +232,7 @@ public class HouseModel extends GridWorldModel {
 
     public HouseModel() {
         // Creación del grid con el tamaño definido en GSize
-        // Número de agentes móviles: 6
+        // Número de agentes móviles: 5s
         super(GSize, GSize, 5);
 
         // Añadido de posiciones iniciales para los agentes (móviles)

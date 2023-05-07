@@ -388,7 +388,7 @@ public class HouseEnv extends Environment {
             // wait 4 seconds to finish "deliver"
             try {
                 Thread.sleep(4000);
-                result = model.addBeerPinchDelivery((int)((NumberTerm)action.getTerm(1)).solve());
+                result = model.addBeerPinchDelivery(action.getTerm(0).toString() ,(int)((NumberTerm)action.getTerm(1)).solve());
             } catch (Exception e) {
                 logger.info("Failed to execute action deliver!"+e);
             }
@@ -397,7 +397,7 @@ public class HouseEnv extends Environment {
         // Acción de coger cerveza del punto de recogida
         else if(action.getFunctor().equals("getDelivery") && ag.equals("rpedidos")){
             try {
-                result = model.getDelivery((int)((NumberTerm)action.getTerm(1)).solve());
+                result = model.getDelivery(action.getTerm(0).toString(),(int)((NumberTerm)action.getTerm(1)).solve());
             } catch (NoValueException e) {
                 logger.info("Failed to execute action deliver!"+e);
             }
@@ -406,7 +406,7 @@ public class HouseEnv extends Environment {
         // Acción de reponer las cervezas de la nevera
         else if(action.getFunctor().equals("reponer") && ag.equals("rpedidos")){
             try {
-                result = model.addBeerPinchFridge((int)((NumberTerm)action.getTerm(1)).solve());
+                result = model.addBeerPinchFridge(action.getTerm(0).toString(),(int)((NumberTerm)action.getTerm(1)).solve());
             } catch (NoValueException e) {
                 logger.info("Failed to execute action deliver!"+e);
             }

@@ -367,12 +367,11 @@ public class HouseModel extends GridWorldModel {
     }
 
     boolean addBeerPinchFridge(int n) {
-		int a = n/2;
         if(rpedidosBeers > 0 && rpedidosPinch > 0){
-            rpedidosBeers-=a;
-            availableBeers+=a;
-			rpedidosPinch-=a;
-			availablePinch+=a;
+            rpedidosBeers-=n;
+            availableBeers+=n;
+			rpedidosPinch-=n;
+			availablePinch+=n;
             if (view != null) view.update(lFridge.x,lFridge.y);
             return true;
         }
@@ -424,7 +423,6 @@ public class HouseModel extends GridWorldModel {
 	
 	// desechar los platos
     boolean desecharP(){
-		System.out.println("adadwadadawdwadadawdawda");
 		if(platosALimpiar > 0){
 			  platosLimpiar+=platosALimpiar;
 			  platosALimpiar=0;
@@ -526,12 +524,11 @@ public class HouseModel extends GridWorldModel {
 
     // Recoger las cervezas del punto de recogida
     public boolean getDelivery(int n) {
-		int a = n/2;
-        if (deliveryBeers > 0) {
-            deliveryBeers-=a;
-            rpedidosBeers+=a;
-			deliveryPinch-=a;
-			rpedidosPinch+=a;
+        if (deliveryBeers > 0 && deliveryPinch > 0) {
+            deliveryBeers-=n;
+            rpedidosBeers+=n;
+			deliveryPinch-=n;
+			rpedidosPinch+=n;
             if(view != null){
                 view.update(lDelivery.x,lDelivery.y);
             }

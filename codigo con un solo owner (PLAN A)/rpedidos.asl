@@ -1,5 +1,5 @@
 
-+delivered(T, Qtd, OrderId, S, M)[source(rmayordomo)] : trabajando
++delivered(T, Qtd, OrderId, S, M)[source(rmayordomo)]
    <- .println("El robot de pedidos se dirige a la zona de entrega");
    	  .send(rmayordomo, tell, trabajando);
       !go_at(rpedidos, delivery);
@@ -11,8 +11,7 @@
       !go_at(rpedidos, fridge);
       reponer(T, 3);
       .send(rmayordomo, tell, available(beer, fridge));
-      !go_at(rpedidos, baseRPedidos);
-	  -trabajando.
+      !go_at(rpedidos, baseRPedidos).
 
 
 +!go_at(rpedidos,P) : at(rpedidos,P) <- true.

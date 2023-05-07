@@ -19,7 +19,7 @@ too_much(B) :-
 
 /* Objetivos */
 
-!bring(owner, beer).
+!bring(owner,beer, pinchito).
 !pide_lista_productos_super.
 
 /* Planes */
@@ -134,22 +134,22 @@ too_much(B) :-
 +!comprar(supermarket, T, M).
 
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
-+!bring(owner,beer)[source(self)]:  trashInEnv(T) & T>0 & not entornoLimpio & cerveza_escogida(M) & pinchito_escogido(P)
++!bring(owner,beer, pinchito)[source(self)]:  trashInEnv(T) & T>0 & not entornoLimpio & cerveza_escogida(M) & pinchito_escogido(P)
    <- .println("El robot mayordomo revisa si hay basura");
       +entornoLimpio;
       .send(rlimpiador, tell, hay_basura(rlimpiador,trash));
-      !bring(owner, beer).
+      !bring(owner, beer, pinchito).
 
-+!bring(owner,beer) [source(self)]:  too_much(beer) & limit(beer,L) 
++!bring(owner,beer, pinchito) [source(self)]:  too_much(beer) & limit(beer,L) 
    <- .concat("The Department of Health does not allow me to give you more than ", L,
               " beers a day! I am very sorry about that!",M);
       .send(owner,tell,msg(M));
       .send(owner, tell, ~couldDrink(beer));
       .println("El Robot mayordomo descansa porque Owner ha bebido mucho hoy.");
       .wait(10000);
-      !bring(owner, beer).
+      !bring(owner,beer, pinchito).
 
-+!bring(owner,beer)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) & pinchito_escogido(P) 
++!bring(owner,beer, pinchito)[source(self)]:  available(beer,fridge) & not too_much(beer) & asked(beer) & cerveza_escogida(M) & pinchito_escogido(P) 
    <- .println("El robot mayordomo va a buscar una cerveza");
       !go_at(rmayordomo,fridge);
       open(fridge);
@@ -166,9 +166,9 @@ too_much(B) :-
 	  .wait(1000);
       !hasBeer(owner);
       .abolish(asked(beer));
-      !bring(owner, beer).	  
+      !bring(owner,beer, pinchito).	  
    
-+!bring(owner,beer) [source(self)]:  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M) & pinchito_escogido(P) 
++!bring(owner,beer, pinchito) [source(self)]:  not available(beer,fridge) & not ordered(beer) & cerverza_escogida(M) & pinchito_escogido(P) 
    <- .println("El robot mayordomo realiza un pedido de ", M);
    	  ?cerveza_escogida(M);
 	  ?pinchito_escogido(P);
@@ -178,18 +178,18 @@ too_much(B) :-
 	  println("El robot mayordomo realiza un pedido de ", P);
 	   .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, pinchito, P);
-      !bring(owner, beer).
+      !bring(owner,beer, pinchito).
 
-+!bring(owner, beer): cerveza_escogida(M) & pinchito_escogido(P)
++!bring(owner,beer, pinchito): cerveza_escogida(M) & pinchito_escogido(P)
    <- !go_at(rmayordomo, baseRMayordomo);
       .wait(2000);
 	   .println("El robot mayordomo está esperando.");
-	   !bring(owner, beer).
+	   !bring(owner,beer, pinchito).
 	   
-+!bring(owner,beer)[source(self)] 
++!bring(owner,beer, pinchito)[source(self)] 
    <- .println("El robot mayordomo espera a que owner elija cerveza");
    	  .wait(100);
-      !bring(owner, beer).
+      !bring(owner,beer, pinchito).
 
 +!limpiezaTerminada <- -entornoLimpio.
 

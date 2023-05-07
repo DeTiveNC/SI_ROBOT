@@ -359,25 +359,40 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Meter cervezas en la zona de entrega
-    boolean addBeerPinchDelivery(int n) {
-        deliveryBeers += n;
-		deliveryPinch += n;
-        if (view != null) view.update(lDelivery.x,lDelivery.y);
+    boolean addBeerPinchDelivery(String m, int n) {
+		if(m.equals("beer")){
+				deliveryBeers += n;
+		        if (view != null) view.update(lDelivery.x,lDelivery.y);
+		} else if(m.equals("pinchito")){
+				deliveryPinch += n;
+		        if (view != null) view.update(lDelivery.x,lDelivery.y);
+		} else{
+			return false;	
+		}
+
         return true;
     }
 
-    boolean addBeerPinchFridge(int n) {
-        if(rpedidosBeers > 0 && rpedidosPinch > 0){
-            rpedidosBeers-=n;
-            availableBeers+=n;
-			rpedidosPinch-=n;
-			availablePinch+=n;
+    boolean addBeerPinchFridge(String m,int n) {
+		if(m.equals("beer")){
+			if(rpedidosBeers > 0 ){
+				rpedidosBeers-=n;
+				availableBeers+=n;
+				if (view != null) view.update(lFridge.x,lFridge.y);
+			}
+			return true;
+		} else if(m.equals("pinchito")){
+			if(rpedidosPinch > 0){
+				rpedidosPinch-=n;
+				availablePinch+=n;
             if (view != null) view.update(lFridge.x,lFridge.y);
             return true;
-        }
-        else{
+			}
+			
+		} else{
             return false;
         }
+		return true;
     }
 
     // Entrega de cerveza al owner
@@ -523,18 +538,29 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Recoger las cervezas del punto de recogida
-    public boolean getDelivery(int n) {
-        if (deliveryBeers > 0 && deliveryPinch > 0) {
+    public boolean getDelivery(String m, int n) {
+		if(m.equals("beer")){
+			if (deliveryBeers > 0) {
             deliveryBeers-=n;
             rpedidosBeers+=n;
-			deliveryPinch-=n;
-			rpedidosPinch+=n;
-            if(view != null){
+			if(view != null){
                 view.update(lDelivery.x,lDelivery.y);
             }
+			 return true;
+			}
+		} else if(m.equals("pinchito")){
+			if(deliveryPinch > 0){
+			deliveryPinch-=n;
+			rpedidosPinch+=n;
+			if(view != null){
+                view.update(lDelivery.x,lDelivery.y);
+            }
+			}
+            
             return true;
         } else {
             return false;
         }
+		return true;
     }
 }

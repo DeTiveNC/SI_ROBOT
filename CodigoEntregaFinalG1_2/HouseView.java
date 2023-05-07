@@ -119,7 +119,7 @@ public class HouseView extends GridWorldView {
                 if (hmodel.carryingBeerMayordomo) c = Color.orange;
                 super.drawAgent(g, x, y, c, -1);
                 g.setColor(Color.black);
-                super.drawString(g, x, y, defaultFont, "May");
+                super.drawString(g, x, y, defaultFont, "myRobot");
                 break;
 
             // Dibujado del agente rlimpiador
@@ -127,7 +127,7 @@ public class HouseView extends GridWorldView {
                 c = Color.ORANGE;
                 super.drawAgent(g, x, y, c, -1);
                 g.setColor(Color.black);
-                super.drawString(g, x, y, defaultFont, "Limp");
+                super.drawString(g, x, y, defaultFont, "Cleaner");
                 break;
             
             // Dibujado del agente rbasurero
@@ -135,7 +135,7 @@ public class HouseView extends GridWorldView {
                 c = Color.CYAN;
                 super.drawAgent(g, x, y, c, -1);
                 g.setColor(Color.black);
-                super.drawString(g, x, y, defaultFont, "Bas");
+                super.drawString(g, x, y, defaultFont, "Burner");
                 break;
 
             // Dibujado del agente rpedidos
@@ -143,7 +143,7 @@ public class HouseView extends GridWorldView {
                 c = Color.magenta;
                 super.drawAgent(g, x, y, c, -1);
                 g.setColor(Color.black);
-                super.drawString(g, x, y, defaultFont, "Ped");
+                super.drawString(g, x, y, defaultFont, "Deliver");
                 break;
 
 			// Dibujado del agente owner

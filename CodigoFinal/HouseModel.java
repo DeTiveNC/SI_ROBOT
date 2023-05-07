@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.random.*;
 
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
@@ -28,9 +29,7 @@ public class HouseModel extends GridWorldModel {
             "rlimpiador", 1,
             "rbasurero", 2,
             "rpedidos", 3,
-            "owner1",4,
-            "owner2",5,
-			"rlavador",6
+            "owner",4
         );
 
     // Variables de frigorifico abierto o cerrado
@@ -39,28 +38,27 @@ public class HouseModel extends GridWorldModel {
 
     // Variables de posesión de una cerveza
     boolean carryingBeerMayordomo = false;
-    boolean carryingBeerOwner1 = false;
-    boolean carryingBeerOwner2 = false;
+    boolean carryingBeerOwner = false;
 
     // Número de sorbos que ha hecho el owner
-    int sipCount1 = 0;
-    int sipCount2 = 0;
-    
-
-    // Cervezas disponibles
-    int availableBeers  = 3;
+    int sipCount = 0;
 	
-	//Pinchitos Disponibles
-	int pinchito = 10;
-
-    // Cervezas en la zona de entrega
-    int deliveryBeers = 0;
 	
 	// Boolean para cambiar de color el bin
 	boolean burnerOn = false;
 
-    // Número de cervezas que lleva el robot de pedidos
+    // Cervezas y pinchos disponibles
+    int availableBeers  = 3;
+	int availablePinch = 3;
+	
+
+    // Cervezas  y pinchitos en la zona de entrega
+    int deliveryBeers = 0;
+	int deliveryPinch = 0;
+
+    // Número de cervezas y pinchito que lleva el robot de pedidos
     int rpedidosBeers = 0;
+	int rpedidosPinch = 0;
 
     // Número de latas que hay en el cubo de basura
     int cansInTrash = 0;
@@ -92,17 +90,15 @@ public class HouseModel extends GridWorldModel {
     // Posiciones originales de los agentes
     Location lRMayordomo = new Location(GSize/2, GSize/2);
     Location lRLimpiador = new Location(GSize/2, 0);
-	Location lRLavador = new Location(0, GSize/2-2);
     Location lRBasurero = new Location(GSize-1, GSize/2-2);
     Location lRPedidos = new Location(GSize/2-2, GSize-1);
-    Location lOwner1 = new Location(GSize-1,GSize-1);
-    Location lOwner2 = new Location(GSize-1,GSize-2);
+    Location lOwner = new Location(GSize-1,GSize-1);
 
     // ArrayList de posiciones de la basura
     ArrayList<Location> lTrash 
         = new ArrayList<>();
 
-   
+    
     
     // Arrays de posiciones permitidas para la colocación de los agentes
 
@@ -158,11 +154,12 @@ public class HouseModel extends GridWorldModel {
 			new Location(lLacena.x-1, lLacena.y+1),
 			new Location(lLacena.x+1, lLacena.y+1)
         ));
-	//ArrayList de obstaculos
-
+		
 	ArrayList<Location> lObstacules 
         = new ArrayList<>();
-	
+		
+
+		
 	// Clase par para almacenar posiciones para la funcion del move_towards
 	public class Pair<L,R> {
 	private L l;
@@ -235,17 +232,15 @@ public class HouseModel extends GridWorldModel {
 
     public HouseModel() {
         // Creación del grid con el tamaño definido en GSize
-        // Número de agentes móviles: 7
-        super(GSize, GSize, 7);
+        // Número de agentes móviles: 6
+        super(GSize, GSize, 5);
 
         // Añadido de posiciones iniciales para los agentes (móviles)
         setAgPos(agents.get("rmayordomo"), lRMayordomo);
         setAgPos(agents.get("rlimpiador"), lRLimpiador);
         setAgPos(agents.get("rbasurero"), lRBasurero);
         setAgPos(agents.get("rpedidos"), lRPedidos);
-        setAgPos(agents.get("owner1"), lOwner1);
-        setAgPos(agents.get("owner2"), lOwner2);
-		setAgPos(agents.get("rlavador"), lRLavador);
+        setAgPos(agents.get("owner"), lOwner);
 
         // Añadido de posiciones para los elementos del entorno (no móviles)
         add(FRIDGE, lFridge);
@@ -275,7 +270,7 @@ public class HouseModel extends GridWorldModel {
     boolean openFridge(String ag) {
         if (!fridgeOpenMayordomo && ag.equals("rmayordomo")) {
             fridgeOpenMayordomo = true;   
-        } else if(!fridgeOpenOwner && (ag.equals("owner1") || ag.equals("owner2") )){
+        } else if(!fridgeOpenOwner && ag.equals("owner")){
             fridgeOpenOwner = true;
         } else {
             return false;
@@ -288,7 +283,7 @@ public class HouseModel extends GridWorldModel {
     boolean closeFridge(String ag) {
         if (fridgeOpenMayordomo && ag.equals("rmayordomo")) {
             fridgeOpenMayordomo = false;   
-        } else if(fridgeOpenOwner && (ag.equals("owner1") || ag.equals("owner2") )){
+        } else if(fridgeOpenOwner && ag.equals("owner")){
             fridgeOpenOwner = false;
         } else {
             return false;
@@ -296,6 +291,7 @@ public class HouseModel extends GridWorldModel {
 
         return true;
     }
+	
 	boolean cambiarCol_On(){
 		burnerOn = true;
 		view.update(lBin.x, lBin.y);
@@ -308,15 +304,15 @@ public class HouseModel extends GridWorldModel {
 		return true;	
 	}
 	
+	
 
     // Movimiento de los agentes por el entorno
-     boolean moveTowards(String ag, Location dest) {
+    boolean moveTowards(String ag, Location dest) {
 
         int nAg = this.agents.get(ag);
         Location lAgent = getAgPos(nAg);
         
         String move = getNextMove(dest, lAgent);
-
 		
 		
 		if(!move.isEmpty() && move.charAt(0) == 'u') {
@@ -337,76 +333,93 @@ public class HouseModel extends GridWorldModel {
 		}
 
         setAgPos(nAg, lAgent);
-
 		
-        
+		if((ag.equals("rlimpiador") && dest.equals(lRLimpiador)) || (ag.equals("owner") && dest.equals(lCouch))){
+		
+			move_to(nAg, lAgent, dest);	
+		}
+
         return true;
     }
+	
+	boolean move_to(int nAg, Location ag, Location dest){
+		if(ag.isNeigbour(dest)){
+			setAgPos(nAg, dest);
+			return true;
+		}
+		return false;
+	}
 
     // Coger cerveza del frigorifico
     boolean getBeerAndPinchito(String ag) {
         if (availableBeers > 0) {
             if(fridgeOpenMayordomo && ag.equals("rmayordomo") && !carryingBeerMayordomo){
                 carryingBeerMayordomo = true;
-            } else if(fridgeOpenOwner && (ag.equals("owner1") ) && !carryingBeerOwner1){
-                carryingBeerOwner1 = true;
-            }else if(fridgeOpenOwner && (ag.equals("owner2") ) && !carryingBeerOwner2){
-                carryingBeerOwner2 = true;
+            } else if(fridgeOpenOwner && ag.equals("owner") && !carryingBeerOwner){
+                carryingBeerOwner = true;
             }
             
-			pinchito-=2;
-            availableBeers-=2;
+			availablePinch--;
+            availableBeers--;
             
             if (view != null) view.update(lFridge.x,lFridge.y);
             return true;
         } else {
-            System.out.println("Error:  getBeerAndPinchito retorna false");
             return false;
-            
         }
     }
 
     // Meter cervezas en la zona de entrega
-    boolean addBeerDelivery(int n) {
-        deliveryBeers += n;
-        if (view != null) view.update(lDelivery.x,lDelivery.y);
+    boolean addBeerPinchDelivery(String m, int n) {
+		if(m.equals("beer")){
+				deliveryBeers += n;
+		        if (view != null) view.update(lDelivery.x,lDelivery.y);
+		} else if(m.equals("pinchito")){
+				deliveryPinch += n;
+		        if (view != null) view.update(lDelivery.x,lDelivery.y);
+		} else{
+			return false;	
+		}
+
         return true;
     }
 
-    boolean addBeerFridge(int n) {
-        if(rpedidosBeers > 0){
-            rpedidosBeers-=n;
-            availableBeers+=n;
-			pinchito += n;
+    boolean addBeerPinchFridge(String m,int n) {
+		if(m.equals("beer")){
+			if(rpedidosBeers > 0 ){
+				rpedidosBeers-=n;
+				availableBeers+=n;
+				if (view != null) view.update(lFridge.x,lFridge.y);
+			}
+			return true;
+		} else if(m.equals("pinchito")){
+			if(rpedidosPinch > 0){
+				rpedidosPinch-=n;
+				availablePinch+=n;
             if (view != null) view.update(lFridge.x,lFridge.y);
             return true;
-        }
-        else{
+			}
+			
+		} else{
             return false;
         }
+		return true;
     }
 
     // Entrega de cerveza al owner
     boolean handInBeer(String ag) {
         if(ag.equals("rmayordomo") && carryingBeerMayordomo){
             carryingBeerMayordomo = false;
-        } else if(ag.equals("owner1") && carryingBeerOwner1){
-            carryingBeerOwner1 = false;
-            
-        } else if(ag.equals("owner2") && carryingBeerOwner2){
-            carryingBeerOwner2 = false;
-            
+        } else if(ag.equals("owner") && carryingBeerOwner){
+            carryingBeerOwner = false;
         } else{
             return false;
         }
-        sipCount1 = 10;
-        sipCount2 = 10;
+            
+        sipCount = 10;
+            
         if(view != null){
-            Location lAgent = getAgPos(this.agents.get("owner1"));
-            view.update(lAgent.x,lAgent.y);
-        }
-        if(view != null){
-            Location lAgent = getAgPos(this.agents.get("owner2"));
+            Location lAgent = getAgPos(this.agents.get("owner"));
             view.update(lAgent.x,lAgent.y);
         }
             
@@ -414,33 +427,19 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Sorver cerveza
-    boolean sipBeer(String ag) {
-        if(ag.equals("owner1")){
-            if (sipCount1 > 0) {
-                sipCount1--;
-                if(view != null){
-                    Location lAgent = getAgPos(this.agents.get("owner1"));
-                    view.update(lAgent.x,lAgent.y);
-                }
-                return true;
-            } else {
-                return false;
+    boolean sipBeer() {
+        if (sipCount > 0) {
+            sipCount--;
+            if(view != null){
+                Location lAgent = getAgPos(this.agents.get("owner"));
+                view.update(lAgent.x,lAgent.y);
             }
+            return true;
+        } else {
+            return false;
         }
-        if(ag.equals("owner2")){
-            if (sipCount2 > 0) {
-                sipCount2--;
-                if(view != null){
-                    Location lAgent = getAgPos(this.agents.get("owner2"));
-                    view.update(lAgent.x,lAgent.y);
-                }
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;     
     }
+
     // desechar la basura
     boolean desechar(){
         cansInTrash++;
@@ -510,7 +509,8 @@ public class HouseModel extends GridWorldModel {
 			lCouchPositions.contains(location) &&
 			lDeliveryPositions.contains(location) &&
 			lLavavajillasPositions.contains(location) &&
-			lLacenaPositions.contains(location)
+			lLacenaPositions.contains(location) &&
+			lObstacules.contains(location)
         );
         
         add(TRASH, location);
@@ -549,16 +549,29 @@ public class HouseModel extends GridWorldModel {
     }
 
     // Recoger las cervezas del punto de recogida
-    public boolean getDelivery(int n) {
-        if (deliveryBeers > 0) {
+    public boolean getDelivery(String m, int n) {
+		if(m.equals("beer")){
+			if (deliveryBeers > 0) {
             deliveryBeers-=n;
             rpedidosBeers+=n;
-            if(view != null){
+			if(view != null){
                 view.update(lDelivery.x,lDelivery.y);
             }
+			 return true;
+			}
+		} else if(m.equals("pinchito")){
+			if(deliveryPinch > 0){
+			deliveryPinch-=n;
+			rpedidosPinch+=n;
+			if(view != null){
+                view.update(lDelivery.x,lDelivery.y);
+            }
+			}
+            
             return true;
         } else {
             return false;
         }
+		return true;
     }
 }

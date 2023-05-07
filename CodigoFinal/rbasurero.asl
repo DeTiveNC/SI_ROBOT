@@ -1,7 +1,7 @@
 
 
 
-+papelera_llena(rbasurero, bin) [source(rlimpiador)]
++papelera_llena(rbasurero, bin) [source(Agt)]
     <-  !go_at(rbasurero, bin);
         vaciar(bin);
 		burnerOn;

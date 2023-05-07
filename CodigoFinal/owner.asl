@@ -22,12 +22,12 @@
 */
 trash(can,0).
 platoVa(plato, 0).
-//money(1500).
-.my_name(N).
+contarPlaLav(plato, 0).
+
 /* Objetivos iniciales */
 
 !money_aleatorio.
-!bebe(N, beer).
+!bebe(owner, beer).
 !pide_lista_productos.
 
 !comprobar_aburrido. // initial goal: verify whether I am getting bored
@@ -61,6 +61,15 @@ platoVa(plato, 0).
 	<- .wait(100); //Esperando por la cerveza TODO: intentar solucionar recursividad		
 	   !escoge_cerveza.
 
++!escoge_pinchito : seleccionProductos(pinchito, L1)[source(rmayordomo)]
+	<- .random(L1, X);
+		!despieza(X, M,_);
+		.print("Pinchito elegido: ", M);
+		.send(rmayordomo, tell, pinchito_escogido(M)).
+
++!escoge_pinchito
+	<- .wait(100); //Esperando por la cerveza TODO: intentar solucionar recursividad		
+	   !escoge_pinchito.
 /*
 	pide_lista_productos/0
 	private
@@ -68,9 +77,11 @@ platoVa(plato, 0).
 */	   
 	   
 +!pide_lista_productos 
-	<-.my_name(N);
-	  .send(rmayordomo, achieve, lista_productos(beer, N));	
-	  !escoge_cerveza.	   
+	<-
+	.send(rmayordomo, achieve, lista_productos(beer));
+	.send(rmayordomo, achieve, lista_productos(pinchito));	
+	!escoge_cerveza;
+	!escoge_pinchito.	   
 	   
 /*
 	get/1 -> cerveza
@@ -79,10 +90,8 @@ platoVa(plato, 0).
 	
 */
 
-+!get(beer) : not asked(beer)
++!get(beer) : not asked(beer) 
    <- .send(rmayordomo, tell, asked(beer));//1: Preguntarle a mayordomo por una cerveza
-      //Y = 50; //2: actualizar dinero a 50 TODO: mejorar esto
-   	  //.send(rmayordomo, tell, money(Y)); 	   //3: enviarle el dinero a mayordomo	
       .println("Owner ha pedido una cerveza al robot mayordomo.");
       +asked(beer);	//4: actualizar belief de que ya se ha pedido una cerveza
 	  .wait(200).
@@ -94,14 +103,14 @@ platoVa(plato, 0).
 +!restarDinero(C): C == 0 <- true.	
 
 +!restarDinero(C) : money(M) & M >= C
-	<-  .print("Cerveza pagada.");		
+	<-  .print("Cerveza y pincho pagado.");		
 		L = M - C;
 		-money(M);
 		+money(L).
 		
 +!restarDinero(C) : money(M) & M < C	  
   <- .print("Cantidad de dinero insuficiente.");
-  	 true.
+  	 false.
 
 /*
 	lanzar/1 -> Elemento
@@ -116,6 +125,40 @@ platoVa(plato, 0).
       -+trash(Elem, C-1).
 +!lanzar(Elem).	 
 
++hay_basura(owner, trash) [source(rmayordomo)]
+   <- !recogerBasura(owner, trash);	  
+      !tirarBasura(owner, bin);
+      !go_at(owner, couch);
+	  !hay_papeleraBin(rbasurero, bin);
+      .abolish(hay_basura(owner, trash));
+	  .send(rmayordomo, achieve, limpiezaTerminada).
+	  
++!hay_papeleraBin(rbasurero, bin) <-
+	.send(rbasurero, tell, papelera_llena(rbasurero, bin));
+	.wait(1000);
+	.send(rbasurero, untell, papelera_llena(rbasurero, bin)).
+	  
++!recogerBasura(owner, trash) : trashInEnv(T) & T > 0
+   <- !go_at(owner, trash);
+      pickTrashO(owner,trash);
+      ?trash(can, C);
+      -+trash(can, C+1);
+      !recogerBasura(owner,trash).
++!recogerBasura(owner, trash).
+
++!tirarBasura(owner, bin): trash(can, X) & X>0
+   <- !go_at(owner, bin);
+      !desechar(owner, trash).
++!tirarBasura(owner, bin).
+
++!desechar(owner, trash) : trash(can, X) & X>0
+   <- desechar(owner,trash);
+      -+trash(can, X-1);
+      !desechar(owner, trash).
++!desechar(owner,trash)
+   <- .println("Owner ha depositado toda la basura en el cubo").
+
+
 /*
 	recogerplatosucio/1 -> Elemento
 	private
@@ -126,7 +169,14 @@ platoVa(plato, 0).
 +!recogerplatosucio(Elem) : platoVa(Elem, D) & D>0
  <-   .println("Owner deja su plato sucio.");
       generatePlato(Elem);
-      -+platoVa(Elem, D-1).
+	  ?contarPlaLav(plato, C);
+	  E=C+1;
+      -+platoVa(Elem, D-1);
+	  -+contarPlaLav(plato,E);
+	   if(E >= 5){
+	  	.send(rmayordomo, tell, platosSucios);
+	  	.send(rmayordomo, achieve, recogerPlatoSucio(rmayordomo,plato));
+	  }.
 +!recogerplatosucio.	
 
 +!dormirse
@@ -167,26 +217,25 @@ platoVa(plato, 0).
 	private
 */	 
 	 
-+!sip(beer) : .my_name(N) &  not has(N,beer)
++!sip(beer) : not has(owner,beer)
    <- true.
-+!sip(beer): .my_name(N) & has(N, beer) & asked(beer)
++!sip(beer): has(owner,beer) & asked(beer) 
    <- .println("Owner va a empezar a beber cerveza y comer un pincho.");
       -asked(beer);
       sip(beer);
       !sip(beer).
-+!sip(beer): .my_name(N) & has(N, beer) & not asked(beer)
++!sip(beer): has(owner,beer) & not asked(beer) 
    <- sip(beer);
       .println("Owner está bebiendo cerveza y comiendo un pincho.");
       !sip(beer).
 	 
-+!bebe(Agt, beer) : not has(Agt, beer) & not asked(beer)
++!bebe(owner, beer) : not has(owner, beer) & not asked(beer) 
    <- .println("Owner no tiene cerveza y un pincho.");
       .random(X);
       !get(beer);
- 
-      !bebe(Agt, beer).	  
+      !bebe(owner, beer).	  
 
-+!bebe(Agt, beer) : has(Agt, beer)
++!bebe(owner, beer) : has(owner, beer)
    <- .println("Owner ya tiene una cerveza y se dispone a beberla.");
       !sip(beer);
       ?trash(can,C);
@@ -195,22 +244,21 @@ platoVa(plato, 0).
 	  -+platoVa(plato, D+1);
       !lanzar(can);
 	  !recogerplatosucio(plato);
-      !bebe(Agt, beer).
+      !bebe(owner, beer).
 
-+!bebe(Agt, beer) : ~couldDrink(beer)
++!bebe(owner, beer) : ~couldDrink(beer) 
    <- .println("Owner ha bebido demasiado por hoy.").	
 
-+!bebe(Agt, beer) : not has(Agt,beer) & asked(beer)
++!bebe(owner, beer) : not has(owner,beer) & asked(beer) 
    <- .println("Owner está esperando una cerveza.");
 	   .wait(500);
-	   !bebe(Agt, beer).
-	
-+pagar_cerveza(C, OrderId, Supermarket)[source(Agt)]
-	<-  .print(C, OrderId, Supermarket, "Aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-	    !restarDinero(C);//TODO: se asume que restar dinero va a salir bien
-		.send(Agt, tell, pago_cerveza(C, OrderId, Supermarket));	
-		-pagar_cerveza(C, OrderId, Supermarket).
-		
+	   !bebe(owner, beer).
+	   
++pagar_cervezaypincho(C, OrderId, Supermarket)[source(Agt)]
+	<-	!restarDinero(C);//TODO: se asume que restar dinero va a salir bien
+		.send(Agt, tell, pago_cervezaypincho(C, OrderId, Supermarket));	
+		-pagar_cervezapincho(C, OrderId, Supermarket).
+	     		 
 +stock(beer,0)
    :  available(beer,fridge)
    <- -available(beer,fridge).

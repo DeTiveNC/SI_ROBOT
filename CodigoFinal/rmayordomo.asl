@@ -133,11 +133,19 @@ too_much(B) :-
 	  
 +!comprar(supermarket, T, M).
 
+
++!escoge_agente(Agt)
+	<- .random([owner, rlimpiador], Agt);
+		.print("El agente que va a tirar la basura es: ", Agt).
+
+
+
 // Esto es mejorable (Se queda parado mientras no se recoge la basura)
 +!bring(owner,beer, pinchito)[source(self)]:  trashInEnv(T) & T>0 & not entornoLimpio & cerveza_escogida(M) & pinchito_escogido(P)
    <- .println("El robot mayordomo revisa si hay basura");
       +entornoLimpio;
-      .send(rlimpiador, tell, hay_basura(rlimpiador,trash));
+	  !escoge_agente(Agt);
+      .send(Agt, tell, hay_basura(Agt,trash));
       !bring(owner, beer, pinchito).
 
 +!bring(owner,beer, pinchito) [source(self)]:  too_much(beer) & limit(beer,L) 
@@ -156,10 +164,8 @@ too_much(B) :-
       get(beer, pinchito);
 	  ?cerveza_escogida(M);
 	  ?pinchito_escogido(P);
-	  .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, beer, M);
 	  .wait(100);
-	   .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, pinchito, P);
       close(fridge);
       !go_at(rmayordomo,couch);
@@ -172,11 +178,9 @@ too_much(B) :-
    <- .println("El robot mayordomo realiza un pedido de ", M);
    	  ?cerveza_escogida(M);
 	  ?pinchito_escogido(P);
-	   .send(rpedidos, tell, trabajando);
       !comprar(supermarket, beer, M);
 	  .wait(100);
 	  println("El robot mayordomo realiza un pedido de ", P);
-	   .send(rpedidos, tell, trabajando);
 	  !comprar(supermarket, pinchito, P);
       !bring(owner,beer, pinchito).
 
@@ -234,7 +238,6 @@ too_much(B) :-
 // when the supermarket makes a delivery, try the 'has' goal again
 +delivered(T,Precio,OrderId,Marca, Cantidad)[source(S)]
   <-  ?money(Money)[source(self)];
-      .print(N);
       -+money(Money-Precio);
       .send(rpedidos, tell, money(Precio));
       .send(rpedidos, tell, delivered(T, Cantidad, OrderId, S, Marca)).
